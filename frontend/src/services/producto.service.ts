@@ -17,7 +17,7 @@ export interface ProductoDetalleResponse {
   providedIn: 'root'
 })
 export class ProductoService {
-  private apiUrl = 'http://localhost:3000';
+  private apiUrl = 'https://easycommerce.onrender.com';
 
   constructor(private http: HttpClient) { }
 

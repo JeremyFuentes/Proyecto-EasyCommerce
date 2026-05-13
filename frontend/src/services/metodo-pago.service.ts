@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class MetodoPagoService {
-  private apiUrl = 'http://localhost:3000';
+  private apiUrl = 'https://easycommerce.onrender.com';
 
   constructor(private http: HttpClient) {}
 

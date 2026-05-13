@@ -24,7 +24,7 @@ export interface LoginResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:3000';
+  private apiUrl = 'https://easycommerce.onrender.com';
 
   constructor(private http: HttpClient) {}
 
