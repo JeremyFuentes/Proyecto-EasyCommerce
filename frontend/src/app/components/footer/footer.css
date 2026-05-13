@@ -1,0 +1,46 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.footer {
+  width: 100%;
+  margin-top: 60px;
+  background-color: #f8f9fa;
+}
+
+.footer h5,
+.footer h6 {
+  color: #111;
+}
+
+.footer a {
+  transition: all 0.2s ease;
+}
+
+.footer a:hover {
+  color: #111 !important;
+  text-decoration: underline !important;
+}
+
+.footer i {
+  font-size: 18px;
+}
+
+.payment-icon {
+  object-fit: contain;
+  background-color: #ffffff;
+  border-radius: 6px;
+  padding: 4px;
+  border: 1px solid #e5e5e5;
+}
+
+@media (max-width: 768px) {
+  .footer {
+    text-align: center;
+  }
+
+  .footer .d-flex {
+    justify-content: center;
+  }
+}

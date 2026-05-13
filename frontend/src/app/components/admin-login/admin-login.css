@@ -1,0 +1,89 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.admin-login-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #111111, #343a40);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 15px;
+}
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 430px;
+  background-color: #ffffff;
+  border-radius: 18px !important;
+  padding: 35px !important;
+  animation: aparecer 0.25s ease-in-out;
+}
+
+.admin-icon {
+  width: 70px;
+  height: 70px;
+  background-color: #111111;
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  font-size: 28px;
+}
+
+.login-card h3 {
+  font-weight: 700;
+  color: #111111;
+}
+
+.form-label {
+  font-weight: 600;
+  color: #333333;
+}
+
+.form-control {
+  height: 46px;
+  border-radius: 10px;
+  border: 1px solid #d5d5d5;
+}
+
+.form-control:focus {
+  border-color: #111111;
+  box-shadow: 0 0 0 0.15rem rgba(0, 0, 0, 0.12);
+}
+
+.btn-dark {
+  height: 46px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.btn-dark:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.text-danger {
+  font-size: 14px;
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

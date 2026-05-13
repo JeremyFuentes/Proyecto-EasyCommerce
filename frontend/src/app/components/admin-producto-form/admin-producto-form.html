@@ -1,0 +1,156 @@
+<div class="admin-form-page bg-light">
+  <div class="container py-5">
+
+    <div class="form-card">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+          <h2 class="mb-1">
+            {{ modoEdicion ? 'Editar Producto' : 'Agregar Nuevo Producto' }}
+          </h2>
+
+          <p class="text-muted mb-0">
+            {{ modoEdicion ? 'Modifica la información del producto seleccionado.' : 'Registra un nuevo producto dentro
+            del inventario.' }}
+          </p>
+        </div>
+
+        <button class="btn btn-outline-secondary" type="button" (click)="cancelar()">
+          Volver
+        </button>
+      </div>
+
+      <form (ngSubmit)="guardarProducto()">
+
+        <div class="row g-3">
+
+          <div class="col-md-6">
+            <label class="form-label">Nombre</label>
+            <input type="text" name="nombre" class="form-control" [(ngModel)]="producto.nombre" required>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Precio</label>
+            <input type="number" name="precio" class="form-control" [(ngModel)]="producto.precio" required min="0"
+              step="0.01">
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Stock</label>
+            <input type="number" name="stock" class="form-control" [(ngModel)]="producto.stock" required min="0"
+              step="1">
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Categoría</label>
+            <select name="categoriaId" class="form-select" [(ngModel)]="producto.categoriaId" required>
+              <option value="">Seleccione una categoría</option>
+              <option *ngFor="let categoria of categorias" [value]="categoria.id">
+                {{ categoria.nombre }}
+              </option>
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Marca</label>
+            <select name="marcaId" class="form-select" [(ngModel)]="producto.marcaId" required>
+              <option value="">Seleccione una marca</option>
+              <option *ngFor="let marca of marcas" [value]="marca.id">
+                {{ marca.nombre }}
+              </option>
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Proveedor</label>
+            <select name="proveedorId" class="form-select" [(ngModel)]="producto.proveedorId" required>
+              <option value="">Seleccione un proveedor</option>
+              <option *ngFor="let proveedor of proveedores" [value]="proveedor.id">
+                {{ proveedor.nombre }}
+              </option>
+            </select>
+          </div>
+
+          <div class="col-md-8">
+            <label class="form-label">Descripción</label>
+            <input type="text" name="descripcion" class="form-control" [(ngModel)]="producto.descripcion" required>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Imagen por URL opcional</label>
+            <input type="text" name="imagen" class="form-control" [(ngModel)]="producto.imagen"
+              placeholder="assets/img/EasyCommerce.png">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Imágenes del producto</label>
+            <input type="file" name="imagenes" class="form-control" multiple accept="image/*"
+              (change)="seleccionarImagenes($event)">
+          </div>
+
+          <div class="col-md-6 d-flex align-items-end">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="estado" id="estado" [(ngModel)]="producto.estado">
+
+              <label class="form-check-label" for="estado">
+                Activo
+              </label>
+            </div>
+          </div>
+
+          <div class="col-12" *ngIf="mensajeError">
+            <div class="alert alert-danger mb-0">
+              {{ mensajeError }}
+            </div>
+          </div>
+
+          <div class="col-12" *ngIf="mensaje">
+            <div class="alert alert-success mb-0">
+              {{ mensaje }}
+            </div>
+          </div>
+
+          <div class="col-12 d-flex justify-content-between mt-3">
+            <button class="btn btn-secondary" type="button" (click)="cancelar()">
+              Cancelar
+            </button>
+
+            <button class="btn btn-primary" type="submit">
+              {{ modoEdicion ? 'Guardar Cambios' : 'Registrar Producto' }}
+            </button>
+          </div>
+
+          <!-- Previsualización de imágenes -->
+          <div class="col-12 mt-3">
+            <h6 class="fw-semibold" *ngIf="imagenesProducto.length > 0">
+  Previsualización
+</h6>
+
+            <div class="preview-container">
+              <div class="preview-item" *ngFor="let imagen of imagenesProducto; let i = index"
+                [class.preview-principal]="i === imagenPrincipalIndex">
+                <img [src]="imagen.url" alt="Preview imagen" class="preview-img">
+
+                <div class="preview-actions">
+                  <button type="button" class="btn btn-sm" [class.btn-dark]="i === imagenPrincipalIndex"
+                    [class.btn-outline-dark]="i !== imagenPrincipalIndex" (click)="seleccionarPrincipal(i)">
+                    {{ i === imagenPrincipalIndex ? 'Principal' : 'Hacer principal' }}
+                  </button>
+
+                  <button type="button" class="btn btn-sm btn-outline-danger" (click)="eliminarImagen(i)">
+                    <i class="fa fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <p class="text-muted small mt-2">
+              Puedes agregar hasta 5 imágenes. La imagen marcada como principal será la que se mostrará en el catálogo.
+            </p>
+          </div>
+
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>

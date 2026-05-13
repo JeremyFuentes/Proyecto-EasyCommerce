@@ -1,0 +1,31 @@
+<div class="formulario">
+  <h2>Crear producto</h2>
+
+  <label>Nombre</label>
+  <input [(ngModel)]="producto.nombre" name="nombre" type="text">
+
+  <label>Descripción</label>
+  <input [(ngModel)]="producto.descripcion" name="descripcion" type="text">
+
+  <label>Precio</label>
+  <input [(ngModel)]="producto.precio" name="precio" type="number" min="0">
+
+  <label>Stock</label>
+  <input [(ngModel)]="producto.stock" name="stock" type="number" step="1" min="0">
+
+  <label>Categoría ID</label>
+  <input [(ngModel)]="producto.categoriaId" name="categoriaId" type="text">
+
+  <label>Marca ID</label>
+  <input [(ngModel)]="producto.marcaId" name="marcaId" type="text">
+
+  <label>Proveedor ID</label>
+  <input [(ngModel)]="producto.proveedorId" name="proveedorId" type="text">
+
+  <label>Imagen</label>
+  <input [(ngModel)]="producto.imagen" name="imagen" type="text">
+
+  <button (click)="guardarProducto()">Guardar</button>
+
+  <p>{{ mensaje }}</p>
+</div>

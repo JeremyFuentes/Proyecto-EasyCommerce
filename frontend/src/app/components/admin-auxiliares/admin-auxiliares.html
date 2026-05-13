@@ -1,0 +1,206 @@
+<div class="admin-layout">
+
+  <div class="sidebar">
+  <div class="sidebar-title">
+    <i class="fa fa-cubes"></i>
+    <span>Administración</span>
+  </div>
+
+  <nav class="nav flex-column sidebar-nav">
+  <a
+    class="nav-link"
+    [class.active]="vistaActual === 'admin-productos'"
+    href="#"
+    (click)="irA('admin-productos', $event)"
+  >
+    <i class="fa fa-box"></i>
+    <span>Productos</span>
+  </a>
+
+  <a
+    class="nav-link"
+    [class.active]="vistaActual === 'admin-usuarios'"
+    href="#"
+    (click)="irA('admin-usuarios', $event)"
+  >
+    <i class="fa fa-users"></i>
+    <span>Usuarios</span>
+  </a>
+
+  <a
+    class="nav-link"
+    [class.active]="vistaActual === 'admin-pedidos'"
+    href="#"
+    (click)="irA('admin-pedidos', $event)"
+  >
+    <i class="fa fa-truck"></i>
+    <span>Pedidos</span>
+  </a>
+
+  <a
+    class="nav-link"
+    [class.active]="vistaActual === 'admin-auxiliares'"
+    href="#"
+    (click)="irA('admin-auxiliares', $event)"
+  >
+    <i class="fa fa-tags"></i>
+    <span>Catálogos</span>
+  </a>
+
+  <a
+    class="nav-link logout-link"
+    href="#"
+    (click)="logout($event)"
+  >
+    <i class="fa fa-right-from-bracket"></i>
+    <span>Cerrar sesión</span>
+  </a>
+</nav>
+</div>
+
+  <div class="content">
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+      <div>
+        <h3 class="mb-1">Gestión de Catálogos</h3>
+        <p class="text-muted mb-0">
+          Administra categorías, marcas y proveedores.
+        </p>
+      </div>
+
+      <button class="btn btn-dark" type="button" (click)="abrirModal()">
+        Nuevo registro
+      </button>
+    </div>
+
+    <div *ngIf="mensaje" class="alert alert-success">
+      {{ mensaje }}
+    </div>
+
+    <div *ngIf="mensajeError && !modalAbierto" class="alert alert-danger">
+      {{ mensajeError }}
+    </div>
+
+    <div class="tabs-card mb-4">
+      <button class="tab-btn" [class.active]="seccionActiva === 'categorias'" (click)="cambiarSeccion('categorias')">
+        Categorías
+      </button>
+
+      <button class="tab-btn" [class.active]="seccionActiva === 'marcas'" (click)="cambiarSeccion('marcas')">
+        Marcas
+      </button>
+
+      <button class="tab-btn" [class.active]="seccionActiva === 'proveedores'" (click)="cambiarSeccion('proveedores')">
+        Proveedores
+      </button>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover align-middle text-center">
+        <thead class="table-dark">
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th *ngIf="seccionActiva === 'categorias'">Descripción</th>
+            <th *ngIf="seccionActiva === 'proveedores'">Contacto</th>
+            <th *ngIf="seccionActiva === 'proveedores'">Correo</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let item of obtenerListaActual()">
+            <td>{{ obtenerId(item) }}</td>
+            <td>{{ obtenerNombre(item) }}</td>
+
+            <td *ngIf="seccionActiva === 'categorias'">
+              {{ obtenerDescripcion(item) || 'N/A' }}
+            </td>
+
+            <td *ngIf="seccionActiva === 'proveedores'">
+              {{ obtenerContacto(item) || 'N/A' }}
+            </td>
+
+            <td *ngIf="seccionActiva === 'proveedores'">
+              {{ obtenerCorreo(item) || 'N/A' }}
+            </td>
+
+            <td>
+              <div class="d-flex justify-content-center gap-2">
+                <button class="btn btn-sm btn-outline-primary" (click)="abrirModal(item)">
+                  <i class="fa fa-pen"></i>
+                </button>
+
+                <button class="btn btn-sm btn-outline-danger" (click)="eliminarItem(item)">
+                  <i class="fa fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          <tr *ngIf="obtenerListaActual().length === 0">
+            <td colspan="6" class="text-muted py-4">
+              No hay registros para mostrar.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-backdrop-custom" *ngIf="modalAbierto">
+  <div class="modal-card-custom">
+
+    <div class="modal-header-custom bg-dark text-white">
+      <h5 class="modal-title mb-0">
+        {{ modoEdicion ? 'Editar' : 'Nuevo' }} {{ obtenerTitulo() }}
+      </h5>
+
+      <button type="button" class="btn-close-white-custom" (click)="cerrarModal()">
+        ×
+      </button>
+    </div>
+
+    <div class="modal-body-custom">
+
+      <div *ngIf="mensajeError" class="alert alert-danger mb-3">
+        {{ mensajeError }}
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Nombre</label>
+        <input type="text" class="form-control" [(ngModel)]="itemActual.nombre">
+      </div>
+
+      <div class="mb-3" *ngIf="seccionActiva === 'categorias'">
+        <label class="form-label">Descripción</label>
+        <input type="text" class="form-control" [(ngModel)]="itemActual.descripcion">
+      </div>
+
+      <div class="mb-3" *ngIf="seccionActiva === 'proveedores'">
+        <label class="form-label">Contacto</label>
+        <input type="text" class="form-control" [(ngModel)]="itemActual.contacto">
+      </div>
+
+      <div class="mb-3" *ngIf="seccionActiva === 'proveedores'">
+        <label class="form-label">Correo</label>
+        <input type="email" class="form-control" [(ngModel)]="itemActual.correo">
+      </div>
+
+    </div>
+
+    <div class="modal-footer-custom">
+      <button class="btn btn-secondary" type="button" (click)="cerrarModal()">
+        Cancelar
+      </button>
+
+      <button class="btn btn-primary" type="button" (click)="guardarItem()">
+        Guardar
+      </button>
+    </div>
+
+  </div>
+</div>

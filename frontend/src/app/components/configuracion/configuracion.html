@@ -1,0 +1,363 @@
+<section class="config-page py-5">
+  <div class="container">
+    <div class="row g-4">
+
+      <!-- Sidebar -->
+      <div class="col-lg-3">
+        <div class="config-sidebar">
+          <button class="config-link" [class.active]="seccionActiva === 'cuenta'" (click)="cambiarSeccion('cuenta')">
+            <i class="fa fa-user me-2"></i>
+            Cuenta
+          </button>
+
+          <button class="config-link" [class.active]="seccionActiva === 'pedidos'" (click)="cambiarSeccion('pedidos')">
+            <i class="fa fa-truck me-2"></i>
+            Pedidos
+          </button>
+
+          <button class="config-link" [class.active]="seccionActiva === 'historial'"
+            (click)="cambiarSeccion('historial')">
+            <i class="fa fa-clock-rotate-left me-2"></i>
+            Historial de pedidos
+          </button>
+
+          <button class="config-link" [class.active]="seccionActiva === 'pagos'" (click)="cambiarSeccion('pagos')">
+            <i class="fa fa-credit-card me-2"></i>
+            Métodos de pago
+          </button>
+        </div>
+      </div>
+
+      <!-- Contenido -->
+      <div class="col-lg-9">
+        <div class="config-content">
+
+          <div *ngIf="mensaje" class="alert alert-success">
+            {{ mensaje }}
+          </div>
+
+          <div *ngIf="mensajeError" class="alert alert-danger">
+            {{ mensajeError }}
+          </div>
+
+          <div *ngIf="cargando" class="text-center py-4">
+            <div class="spinner-border text-dark mb-2" role="status">
+              <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p class="text-muted mb-0">Cargando información...</p>
+          </div>
+
+          <!-- Cuenta -->
+          <div *ngIf="seccionActiva === 'cuenta' && !cargando">
+            <h4 class="fw-bold mb-3">Información de la cuenta</h4>
+
+            <form (ngSubmit)="guardarCambios()" class="config-form">
+              <div class="mb-3">
+                <label class="form-label">Nombre</label>
+                <input type="text" class="form-control" [(ngModel)]="usuario.nombre" name="nombre">
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Correo electrónico</label>
+                <input type="email" class="form-control" [(ngModel)]="usuario.correo" name="correo">
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Dirección</label>
+                <input type="text" class="form-control" [(ngModel)]="usuario.direccion" name="direccion"
+                  placeholder="Agrega tu dirección">
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Contacto</label>
+                <input type="text" class="form-control" [(ngModel)]="usuario.contacto" name="contacto"
+                  placeholder="Agrega tu número de contacto">
+              </div>
+
+              <button type="submit" class="btn btn-dark rounded-pill px-4">
+                Guardar cambios
+              </button>
+            </form>
+
+            <hr class="my-4">
+
+            <button type="button" class="btn btn-outline-dark rounded-pill" (click)="alternarCambioPassword()">
+              Cambiar contraseña
+            </button>
+
+            <div *ngIf="mostrarCambioPassword" class="password-box mt-4">
+              <h5 class="fw-bold mb-3">Cambio de contraseña</h5>
+
+              <div class="mb-3">
+                <label class="form-label">Contraseña actual</label>
+                <input type="password" class="form-control" [(ngModel)]="passwordActual" name="passwordActual">
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Nueva contraseña</label>
+                <input type="password" class="form-control" [(ngModel)]="nuevaPassword" name="nuevaPassword">
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Confirmar nueva contraseña</label>
+                <input type="password" class="form-control" [(ngModel)]="confirmarPassword" name="confirmarPassword">
+              </div>
+
+              <button type="button" class="btn btn-success rounded-pill px-4" (click)="cambiarPassword()">
+                Actualizar contraseña
+              </button>
+            </div>
+          </div>
+
+          <!-- Pedidos activos -->
+          <!-- Pedidos activos -->
+          <div *ngIf="seccionActiva === 'pedidos' && !cargando">
+            <h4 class="fw-bold mb-4">Pedidos activos</h4>
+
+            <div *ngIf="pedidosActivos.length === 0" class="empty-box text-muted">
+              No tienes pedidos activos.
+            </div>
+
+            <div class="factura-card" *ngFor="let orden of pedidosActivos">
+
+              <div class="factura-header">
+                <div>
+                  <h5 class="fw-bold mb-1">
+                    Pedido #{{ orden.ordenId }}
+                  </h5>
+
+                  <p class="text-muted mb-0">
+                    Fecha: {{ formatearFecha(orden.fechaOrden) }}
+                  </p>
+                </div>
+
+                <div class="text-md-end">
+                  <span class="badge estado-badge" [ngClass]="obtenerClaseEstado(orden.estadoGeneral)">
+                    {{ orden.estadoGeneral }}
+                  </span>
+
+                  <p class="text-muted small mb-0 mt-2">
+                    {{ calcularTotalItems(orden) }} producto(s)
+                  </p>
+                </div>
+              </div>
+
+              <div class="factura-table">
+                <div class="factura-row factura-row-head">
+                  <div>Producto</div>
+                  <div class="text-center">Cantidad</div>
+                  <div class="text-end">Precio unitario</div>
+                  <div class="text-end">Total</div>
+                </div>
+
+                <div class="factura-row" *ngFor="let item of orden.detalles">
+                  <div class="factura-producto">
+                    <img class="factura-img" [src]="item.imagen" [alt]="item.nombre">
+
+                    <div>
+                      <p class="fw-semibold mb-1">{{ item.nombre }}</p>
+
+                      <span class="badge" [ngClass]="obtenerClaseEstado(item.estado)">
+                        {{ item.estado }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="text-center">
+                    {{ item.cantidad }}
+                  </div>
+
+                  <div class="text-end">
+                    ${{ item.precioUnitario.toFixed(2) }}
+                  </div>
+
+                  <div class="text-end fw-semibold">
+                    ${{ item.totalLinea.toFixed(2) }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="factura-resumen">
+                <div>
+                  <span>Subtotal</span>
+                  <strong>${{ orden.subtotal.toFixed(2) }}</strong>
+                </div>
+
+                <div>
+                  <span>Envío</span>
+                  <strong>${{ orden.envio.toFixed(2) }}</strong>
+                </div>
+
+                <div>
+                  <span>Descuento</span>
+                  <strong>-${{ orden.descuento.toFixed(2) }}</strong>
+                </div>
+
+                <div class="factura-total">
+                  <span>Total</span>
+                  <strong>${{ orden.total.toFixed(2) }}</strong>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Historial -->
+          <!-- Historial -->
+          <div *ngIf="seccionActiva === 'historial' && !cargando">
+            <h4 class="fw-bold mb-4">Historial de pedidos</h4>
+
+            <div *ngIf="historialPedidos.length === 0" class="empty-box text-muted">
+              No tienes pedidos entregados todavía.
+            </div>
+
+            <div class="factura-card factura-entregada" *ngFor="let orden of historialPedidos">
+
+              <div class="factura-header">
+                <div>
+                  <h5 class="fw-bold mb-1">
+                    Factura #{{ orden.ordenId }}
+                  </h5>
+
+                  <p class="text-muted mb-0">
+                    Fecha de compra: {{ formatearFecha(orden.fechaOrden) }}
+                  </p>
+                </div>
+
+                <div class="text-md-end">
+                  <span class="badge estado-badge bg-success">
+                    Entregado
+                  </span>
+
+                  <p class="text-muted small mb-0 mt-2">
+                    {{ calcularTotalItems(orden) }} producto(s)
+                  </p>
+                </div>
+              </div>
+
+              <div class="factura-table">
+                <div class="factura-row factura-row-head">
+                  <div>Producto</div>
+                  <div class="text-center">Cantidad</div>
+                  <div class="text-end">Precio unitario</div>
+                  <div class="text-end">Total</div>
+                </div>
+
+                <div class="factura-row" *ngFor="let item of orden.detalles">
+                  <div class="factura-producto">
+                    <img [src]="item.imagen" [alt]="item.nombre">
+
+                    <div>
+                      <p class="fw-semibold mb-1">{{ item.nombre }}</p>
+                      <span class="badge bg-success">Entregado</span>
+                    </div>
+                  </div>
+
+                  <div class="text-center">
+                    {{ item.cantidad }}
+                  </div>
+
+                  <div class="text-end">
+                    ${{ item.precioUnitario.toFixed(2) }}
+                  </div>
+
+                  <div class="text-end fw-semibold">
+                    ${{ item.totalLinea.toFixed(2) }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="factura-resumen">
+                <div>
+                  <span>Subtotal</span>
+                  <strong>${{ orden.subtotal.toFixed(2) }}</strong>
+                </div>
+
+                <div>
+                  <span>Envío</span>
+                  <strong>${{ orden.envio.toFixed(2) }}</strong>
+                </div>
+
+                <div>
+                  <span>Descuento</span>
+                  <strong>-${{ orden.descuento.toFixed(2) }}</strong>
+                </div>
+
+                <div class="factura-total">
+                  <span>Total pagado</span>
+                  <strong>${{ orden.total.toFixed(2) }}</strong>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Métodos de pago -->
+          <div *ngIf="seccionActiva === 'pagos' && !cargando">
+            <h4 class="fw-bold mb-3">Métodos de pago</h4>
+
+            <p class="text-muted">
+              Agrega una tarjeta de crédito o débito. Por seguridad, solo se guardan los últimos 4 dígitos.
+            </p>
+
+            <div class="row g-3 mb-4">
+              <div class="col-md-6">
+                <label class="form-label">Tipo de tarjeta</label>
+                <select class="form-select" [(ngModel)]="nuevoMetodoPago.TipoTarjeta" name="tipoTarjeta">
+                  <option value="Crédito">Crédito</option>
+                  <option value="Débito">Débito</option>
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">Titular</label>
+                <input type="text" class="form-control" [(ngModel)]="nuevoMetodoPago.Titular" name="titular"
+                  placeholder="Nombre del titular">
+              </div>
+
+              <div class="col-md-8">
+                <label class="form-label">Número de tarjeta</label>
+                <input type="text" class="form-control" [(ngModel)]="nuevoMetodoPago.NumeroTarjeta" name="numeroTarjeta"
+                  placeholder="0000 0000 0000 0000">
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label">Expiración</label>
+                <input type="text" class="form-control" [(ngModel)]="nuevoMetodoPago.Expiracion" name="expiracion"
+                  placeholder="MM/AA">
+              </div>
+
+              <div class="col-12">
+                <button class="btn btn-dark rounded-pill px-4" type="button" (click)="agregarMetodoPago()">
+                  Agregar tarjeta
+                </button>
+              </div>
+            </div>
+
+            <div *ngIf="metodosPago.length === 0" class="empty-box text-muted">
+              No tienes métodos de pago guardados.
+            </div>
+
+            <div class="payment-card" *ngFor="let metodo of metodosPago">
+              <div>
+                <h6 class="fw-bold mb-1">
+                  Tarjeta de {{ metodo.TipoTarjeta }}
+                </h6>
+                <p class="mb-0 text-muted">
+                  **** **** **** {{ metodo.UltimosDigitos }} · Expira {{ metodo.Expiracion }}
+                </p>
+                <small>Titular: {{ metodo.Titular }}</small>
+              </div>
+
+              <button class="btn btn-outline-danger rounded-pill" type="button" (click)="eliminarMetodoPago(metodo)">
+                Eliminar
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>

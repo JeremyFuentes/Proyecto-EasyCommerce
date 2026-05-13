@@ -1,0 +1,284 @@
+<div *ngIf="!producto" class="container py-5 text-center">
+    <h4 class="fw-bold">No se seleccionó ningún producto</h4>
+    <p class="text-muted">Regresa a productos y selecciona uno para ver su detalle.</p>
+
+    <button class="btn btn-dark rounded-pill px-4" (click)="volverAProductos()">
+        Volver a productos
+    </button>
+</div>
+
+<div *ngIf="producto">
+
+    <!-- Breadcrumb -->
+    <div class="container mt-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="#" (click)="volverAProductos($event)">Productos</a>
+                </li>
+
+                <li class="breadcrumb-item active" aria-current="page">
+                    {{ obtenerNombre(producto) }}
+                </li>
+            </ol>
+        </nav>
+    </div>
+
+    <!-- Detalle del producto -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row gy-4">
+
+                <!-- Galería -->
+                <div class="col-lg-6 d-flex galeria-producto">
+                    <div class="d-flex flex-column gap-2 me-3 miniaturas-box">
+                        <img *ngFor="let imagen of imagenesProducto" [src]="imagen" alt="Miniatura"
+                            class="img-thumbnail miniatura" [class.thumb-activa]="imagenPrincipal === imagen"
+                            (click)="cambiarImagen(imagen)">
+                    </div>
+
+                    <div class="image-box mb-3 flex-grow-1 text-center">
+                        <img [src]="imagenPrincipal" [alt]="obtenerNombre(producto)" class="img-fluid rounded">
+                    </div>
+                </div>
+
+                <!-- Información del producto -->
+                <div class="col-lg-6">
+                    <h3 class="fw-bold">
+                        {{ obtenerNombre(producto) }}
+                    </h3>
+
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="text-warning me-2">
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star-half-alt"></i>
+                            <i class="fa-regular fa-star"></i>
+                        </span>
+
+                        <span>4.5/5</span>
+                    </div>
+
+                    <h4 class="fw-bold">
+                        ${{ obtenerPrecio(producto).toFixed(2) }}
+                    </h4>
+
+                    <p class="text-muted mt-3">
+                        {{ obtenerDescripcion(producto) }}
+                    </p>
+
+                    <div class="product-meta mt-3">
+                        <p class="mb-1">
+                            <strong>Categoría:</strong> {{ obtenerCategoria(producto) }}
+                        </p>
+
+                        <p class="mb-1">
+                            <strong>Marca:</strong> {{ obtenerMarca(producto) }}
+                        </p>
+                    </div>
+
+                    <div class="mt-3">
+                        <p class="fw-semibold mb-1">Cantidad disponible:</p>
+
+                        <p class="mb-0">
+                            <i class="fa fa-boxes-stacked me-1"></i>
+                            <span>{{ obtenerStock(producto) }} unidades disponibles</span>
+                        </p>
+                    </div>
+
+                    <div *ngIf="mensaje" class="alert alert-success mt-3">
+                        {{ mensaje }}
+                    </div>
+
+                    <div *ngIf="mensajeError" class="alert alert-danger mt-3">
+                        {{ mensajeError }}
+                    </div>
+
+                    <!-- Botones de acción -->
+                    <div class="d-flex gap-3 align-items-center mt-4 flex-wrap">
+
+                        <div class="d-flex align-items-center gap-2">
+                            <button class="btn btn-outline-dark rounded-circle px-3" (click)="disminuirCantidad()">
+                                -
+                            </button>
+
+                            <span class="fw-semibold">{{ cantidad }}</span>
+
+                            <button class="btn btn-outline-dark rounded-circle px-3" (click)="aumentarCantidad()"
+                                [disabled]="cantidad >= obtenerStock(producto)">
+                                +
+                            </button>
+                        </div>
+
+                        <button class="btn btn-dark px-4 rounded-pill" (click)="agregarAlCarrito()"
+                            [disabled]="obtenerStock(producto) <= 0">
+                            Agregar al carrito
+                        </button>
+
+                        <button class="btn rounded-circle" [class.btn-outline-danger]="!esFavorito"
+                            [class.btn-danger]="esFavorito" (click)="alternarFavorito()" [disabled]="cargandoFavorito"
+                            title="Agregar a favoritos">
+                            <i class="fa" [class.fa-regular]="!esFavorito" [class.fa-solid]="esFavorito"
+                                [class.fa-heart]="true"></i>
+                        </button>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Reseñas -->
+    <section class="py-5 border-top">
+        <div class="container">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="fw-bold mb-0">
+                    Opiniones de clientes <span class="text-muted">(453)</span>
+                </h5>
+
+                <div>
+                    <button class="btn btn-sm btn-outline-dark">Últimas</button>
+                    <button class="btn btn-dark btn-sm ms-2">Escribir reseña</button>
+                </div>
+            </div>
+
+            <div class="row g-4">
+
+                <div class="col-md-6">
+                    <div class="review-card">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <strong>Samantha D.</strong>
+
+                            <span class="text-warning">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                            </span>
+                        </div>
+
+                        <p class="text-muted small">
+                            "Excelente producto, buena calidad y funcionamiento correcto."
+                        </p>
+
+                        <p class="small text-muted mb-0">
+                            Publicado el 14 de agosto de 2023
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="review-card">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <strong>Alex M.</strong>
+
+                            <span class="text-warning">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-half-alt"></i>
+                                <i class="fa-regular fa-star"></i>
+                            </span>
+                        </div>
+
+                        <p class="text-muted small">
+                            "Buen rendimiento y precio razonable. Lo recomendaría."
+                        </p>
+
+                        <p class="small text-muted mb-0">
+                            Publicado el 15 de agosto de 2023
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="text-center mt-4">
+                <button class="btn btn-outline-dark rounded-pill">
+                    Cargar más opiniones
+                </button>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Productos relacionados -->
+    <section class="py-5 border-top">
+        <div class="container">
+
+            <h4 class="fw-bold mb-4">Productos Relacionados</h4>
+
+            <div *ngIf="productosRelacionados.length === 0" class="text-muted">
+                No hay productos relacionados disponibles.
+            </div>
+
+            <div class="row g-4">
+                <div class="col-12 col-sm-6 col-lg-3" *ngFor="let relacionado of productosRelacionados">
+                    <div class="card card-producto shadow-sm">
+                        <img [src]="obtenerImagen(relacionado)" class="card-img-top" [alt]="obtenerNombre(relacionado)">
+
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                {{ obtenerNombre(relacionado) }}
+                            </h5>
+
+                            <p class="text-muted small">
+                                {{ obtenerDescripcion(relacionado) }}
+                            </p>
+
+                            <p class="fw-bold mt-2">
+                                ${{ obtenerPrecio(relacionado).toFixed(2) }}
+                            </p>
+
+                            <button class="btn btn-outline-dark rounded-pill mt-2"
+                                (click)="verDetalleRelacionado(relacionado)">
+                                Ver detalle
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+</div>
+
+<!-- Modal para iniciar sesión -->
+<div class="modal-backdrop-custom" *ngIf="mostrarModalLogin">
+    <div class="modal-card-login">
+
+        <div class="modal-header-custom">
+            <h5 class="modal-title fw-bold">
+                Inicia sesión para continuar
+            </h5>
+
+            <button type="button" class="btn-close-custom" (click)="cerrarModalLogin()">
+                ×
+            </button>
+        </div>
+
+        <div class="modal-body text-center px-4">
+            <i class="fa fa-user-lock fa-3x mb-3 text-dark"></i>
+
+            <p class="mb-0">
+                Para {{ accionPendiente }} necesitas iniciar sesión en tu cuenta.
+            </p>
+        </div>
+
+        <div class="modal-footer-custom">
+            <button type="button" class="btn btn-outline-secondary rounded-pill px-4" (click)="cerrarModalLogin()">
+                Cancelar
+            </button>
+
+            <button type="button" class="btn btn-dark rounded-pill px-4" (click)="irALogin()">
+                Iniciar sesión
+            </button>
+        </div>
+
+    </div>
+</div>

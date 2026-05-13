@@ -1,0 +1,145 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.hero {
+  width: 100%;
+  background-color: #f2f0f1;
+  padding: 80px 0;
+}
+
+.hero h1 {
+  font-size: 58px;
+  font-weight: 900;
+  line-height: 1.05;
+  color: #111;
+  letter-spacing: -1px;
+}
+
+.hero p {
+  max-width: 520px;
+  color: #555;
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+.btn-cta {
+  display: inline-block;
+  background-color: #111;
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  padding: 14px 42px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.btn-cta:hover {
+  background-color: #333;
+}
+
+.metric {
+  font-size: 30px;
+  font-weight: 800;
+  color: #111;
+}
+
+.metric span {
+  display: block;
+  font-size: 13px;
+  font-weight: 400;
+  color: #777;
+  margin-top: 5px;
+}
+
+.hero-img {
+  max-height: 420px;
+  object-fit: contain;
+}
+
+.nuevos-productos,
+.mas-vendidos,
+.opiniones {
+  background-color: #fff;
+}
+
+.nuevos-productos h2,
+.mas-vendidos h2,
+.opiniones h2 {
+  font-size: 34px;
+  color: #111;
+}
+
+.card-img-top {
+  width: 100%;
+  height: 180px;
+  object-fit: contain;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+}
+
+.card-producto {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: none;
+  border-radius: 18px;
+  padding: 12px;
+  transition: 0.2s ease;
+}
+
+.card-producto:hover {
+  transform: translateY(-4px);
+}
+
+.card-body {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card-body p {
+  margin: 0;
+}
+
+.opiniones .card {
+  border-radius: 18px;
+}
+
+@media (max-width: 991px) {
+  .hero {
+    padding: 55px 0;
+  }
+
+  .hero h1 {
+    font-size: 42px;
+  }
+
+  .metrics-container {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .metric {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 576px) {
+  .hero h1 {
+    font-size: 34px;
+  }
+
+  .hero p {
+    font-size: 15px;
+  }
+
+  .btn-cta {
+    width: 100%;
+  }
+}

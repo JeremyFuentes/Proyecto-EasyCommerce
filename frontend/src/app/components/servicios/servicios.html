@@ -1,0 +1,28 @@
+<section class="py-5 servicios">
+  <div class="container text-center">
+    <h2 class="fw-bold mb-4">Nuestros Servicios</h2>
+
+    <p class="text-muted mb-5 descripcion-principal">
+      En Easy Commerce te ofrecemos soluciones que van más allá de la venta.
+      Conoce nuestros servicios profesionales pensados para ti.
+    </p>
+
+    <div class="row g-4">
+      <div class="col-md-4" *ngFor="let servicio of servicios">
+        <div class="servicio-card p-4 h-100 text-start">
+          <div class="mb-3 text-primary fs-2">
+            <i [class]="servicio.icono"></i>
+          </div>
+
+          <h5 class="fw-semibold mb-2">
+            {{ servicio.titulo }}
+          </h5>
+
+          <p class="text-muted small">
+            {{ servicio.descripcion }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

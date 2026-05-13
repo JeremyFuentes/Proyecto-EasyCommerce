@@ -1,0 +1,84 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.admin-form-page {
+  min-height: 100vh;
+}
+
+.form-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.form-control,
+.form-select {
+  height: 46px;
+  border-radius: 10px;
+}
+
+textarea.form-control {
+  height: auto;
+}
+
+.preview-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.preview-img {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  border: 1px solid #e5e5e5;
+  padding: 8px;
+}
+
+.form-check-input {
+  cursor: pointer;
+}
+
+.btn {
+  border-radius: 8px;
+}
+
+.preview-item {
+  width: 160px;
+  border: 1px solid #e5e5e5;
+  border-radius: 14px;
+  padding: 10px;
+  background-color: #ffffff;
+  position: relative;
+}
+
+.preview-principal {
+  border: 2px solid #212529;
+}
+
+.preview-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.preview-actions .btn {
+  font-size: 12px;
+  padding: 5px 8px;
+}
+
+.preview-img {
+  width: 100%;
+  height: 110px;
+  object-fit: contain;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  padding: 6px;
+}

@@ -1,0 +1,285 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.hero {
+  padding: 20px 0;
+  background-color: #fff;
+}
+
+.hero h1 {
+  font-weight: 800;
+  font-size: 3rem;
+}
+
+.hero p {
+  color: #666;
+  font-size: 1rem;
+}
+
+.metric {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.metric span {
+  display: block;
+  font-size: 0.9rem;
+  color: #777;
+}
+
+.navbar-nav .nav-link {
+  font-weight: 500;
+  margin-right: 1rem;
+}
+
+.btn-cta {
+  background-color: #000;
+  color: #fff;
+  padding: 10px 25px;
+  border-radius: 50px;
+  text-decoration: none;
+}
+
+.search-input {
+  border-radius: 25px;
+  padding: 8px 15px;
+  border: 1px solid #ddd;
+  max-width: 250px;
+}
+
+.nuevos-productos h2 {
+  font-size: 2rem;
+}
+
+.placeholder-image {
+  width: 100%;
+  height: 180px;
+  background-color: #e0e0e0;
+  border-radius: 10px;
+}
+
+.opiniones .card {
+  min-width: 280px;
+  margin-right: 16px;
+  border-radius: 12px;
+}
+
+.opiniones .card:last-child {
+  margin-right: 0;
+}
+
+.footer h6 {
+  font-size: 1rem;
+}
+
+.footer a:hover {
+  color: #000;
+}
+
+.footer i {
+  font-size: 18px;
+}
+
+/* Cart Page Styles */
+
+.cart-page {
+  padding: 50px 0;
+  background-color: #f8f9fa;
+}
+
+.cart-item {
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.qty-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.qty-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background-color: #e9ecef;
+  font-weight: bold;
+}
+
+.summary-box {
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.btn-checkout {
+  background-color: #000;
+  color: #fff;
+  padding: 10px 0;
+  width: 100%;
+  border-radius: 30px;
+}
+
+.btn-checkout:hover {
+  background-color: #333;
+}
+
+.favorito-item {
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    padding: 1rem;
+    transition: box-shadow 0.2s ease;
+  }
+
+  .favorito-item:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  }
+
+  .btn-remove-fav {
+    background: none;
+    border: none;
+    color: red;
+  }
+
+  /* Favoritos Page Styles */
+
+  .favorito-item {
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    padding: 1rem;
+    transition: box-shadow 0.2s ease;
+  }
+
+  .favorito-item:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  }
+
+  .btn-remove-fav {
+    background: none;
+    border: none;
+    color: red;
+  }
+
+  /* Payment Page Styles */
+  .payment-icon {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 5px 10px;
+    border: 1px solid #dee2e6;
+    object-fit: contain;
+  }
+  
+/* ==== Detalle de producto ==== */
+.image-box {
+  height: 400px;
+  overflow: hidden;
+  border-radius: 10px;
+  border: 2px solid #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-box img {
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.thumb-activa {
+  border: 2px solid #007bff; /* azul Bootstrap */
+  border-radius: 6px;
+}
+
+.thumb {
+  height: 60px;
+  background: #dee2e6;
+  border-radius: 8px;
+}
+
+.badge-sale {
+  background-color: #ffe0e0;
+  color: #d20000;
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+}
+
+.review-card {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.related-product .placeholder-image {
+  height: 180px;
+}
+
+.filtros-box {
+  position: sticky;
+  top: 20px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+}
+
+.productos-scroll-box {
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 10px;
+}
+
+.productos-scroll-box::-webkit-scrollbar,
+.filtros-box::-webkit-scrollbar {
+  width: 8px;
+}
+
+.productos-scroll-box::-webkit-scrollbar-thumb,
+.filtros-box::-webkit-scrollbar-thumb {
+  background-color: #c7c7c7;
+  border-radius: 10px;
+}
+
+.productos-scroll-box::-webkit-scrollbar-track,
+.filtros-box::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+  border-radius: 10px;
+}
+
+@media (max-width: 768px) {
+  .filtros-box {
+    position: static;
+    max-height: none;
+    overflow-y: visible;
+  }
+
+  .productos-scroll-box {
+    max-height: none;
+    overflow-y: visible;
+    padding-right: 0;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #f5f6f8;
+}
+
+app-root {
+  display: block;
+  width: 100%;
+  min-height: 100vh;
+}

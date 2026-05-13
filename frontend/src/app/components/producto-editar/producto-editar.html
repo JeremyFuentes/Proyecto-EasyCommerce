@@ -1,0 +1,17 @@
+<div class="formulario">
+  <h2>Editar producto</h2>
+
+  <label>Nombre</label>
+  <input [(ngModel)]="producto.nombre" type="text">
+
+  <label>Precio</label>
+  <input [(ngModel)]="producto.precio" type="number">
+
+  <label>Stock</label>
+<input [(ngModel)]="producto.stock" type="number" step="1" min="0">
+
+  <button (click)="actualizarProducto()">Actualizar</button>
+  <button type="button" (click)="volverALista()">Volver</button>
+
+  <p>{{ mensaje }}</p>
+</div>

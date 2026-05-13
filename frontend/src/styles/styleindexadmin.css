@@ -1,0 +1,55 @@
+
+    body {
+      display: flex;
+      min-height: 100vh;
+    }
+    .sidebar {
+      width: 15%;
+      background-color: #212529;
+      color: white;
+      padding: 1rem;
+    }
+    .sidebar h4 {
+      margin-bottom: 1rem;
+    }
+    .sidebar .nav-link {
+      color: #ffffff;
+      margin: 0.5rem 0;
+    }
+    .content {
+      width: 85%;
+      padding: 2rem;
+      background-color: #f8f9fa;
+    }
+
+    .preview-container {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+      }
+      .img-preview-wrapper {
+        position: relative;
+        display: inline-block;
+      }
+      .img-preview-wrapper img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+      .btn-delete-img {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: red;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        font-size: 14px;
+        line-height: 1;
+        cursor: pointer;
+      }

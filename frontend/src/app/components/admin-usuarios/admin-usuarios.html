@@ -1,0 +1,217 @@
+<div class="admin-layout">
+
+  <div class="sidebar">
+  <div class="sidebar-title">
+    <i class="fa fa-cubes"></i>
+    <span>Administración</span>
+  </div>
+
+  <nav class="nav flex-column sidebar-nav">
+  <a
+    class="nav-link"
+    [class.active]="vistaActual === 'admin-productos'"
+    href="#"
+    (click)="irA('admin-productos', $event)"
+  >
+    <i class="fa fa-box"></i>
+    <span>Productos</span>
+  </a>
+
+  <a
+    class="nav-link"
+    [class.active]="vistaActual === 'admin-usuarios'"
+    href="#"
+    (click)="irA('admin-usuarios', $event)"
+  >
+    <i class="fa fa-users"></i>
+    <span>Usuarios</span>
+  </a>
+
+  <a
+    class="nav-link"
+    [class.active]="vistaActual === 'admin-pedidos'"
+    href="#"
+    (click)="irA('admin-pedidos', $event)"
+  >
+    <i class="fa fa-truck"></i>
+    <span>Pedidos</span>
+  </a>
+
+  <a
+    class="nav-link"
+    [class.active]="vistaActual === 'admin-auxiliares'"
+    href="#"
+    (click)="irA('admin-auxiliares', $event)"
+  >
+    <i class="fa fa-tags"></i>
+    <span>Catálogos</span>
+  </a>
+
+  <a
+    class="nav-link logout-link"
+    href="#"
+    (click)="logout($event)"
+  >
+    <i class="fa fa-right-from-bracket"></i>
+    <span>Cerrar sesión</span>
+  </a>
+</nav>
+</div>
+
+  <!-- Contenido -->
+  <div class="content">
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+      <div>
+        <h3 class="mb-1">Gestión de Usuarios</h3>
+        <p class="text-muted mb-0">Administra los usuarios registrados en el sistema.</p>
+      </div>
+    </div>
+
+    <div *ngIf="mensaje" class="alert alert-success">
+      {{ mensaje }}
+    </div>
+
+    <div *ngIf="mensajeError" class="alert alert-danger">
+      {{ mensajeError }}
+    </div>
+
+    <!-- Buscador -->
+    <div class="filters-card mb-4">
+      <div class="row g-3 align-items-end">
+        <div class="col-md-9">
+          <label class="form-label fw-semibold">Buscar usuario</label>
+          <input type="text" class="form-control" placeholder="Buscar por nombre, correo o contacto"
+            [(ngModel)]="busqueda" (input)="aplicarBusqueda()">
+        </div>
+
+        <div class="col-md-3">
+          <button class="btn btn-outline-dark w-100" type="button" (click)="busqueda=''; aplicarBusqueda()">
+            Limpiar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla -->
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover align-middle text-center">
+        <thead class="table-dark">
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Correo</th>
+            <th>Dirección</th>
+            <th>Contacto</th>
+            <th>Rol</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let usuario of usuariosFiltrados">
+            <td>{{ obtenerId(usuario) | slice:0:8 }}</td>
+            <td>{{ obtenerNombre(usuario) }}</td>
+            <td>{{ obtenerCorreo(usuario) }}</td>
+            <td>{{ obtenerDireccion(usuario) || 'N/A' }}</td>
+            <td>{{ obtenerContacto(usuario) || 'N/A' }}</td>
+            <td>
+              <span class="badge" [class.bg-dark]="obtenerRol(usuario) === 'Administrador'"
+                [class.bg-secondary]="obtenerRol(usuario) !== 'Administrador'">
+                {{ obtenerRol(usuario) }}
+              </span>
+            </td>
+            <td>
+              <button class="btn btn-sm btn-outline-primary" (click)="abrirFormulario(usuario)">
+                <i class="fa fa-pen"></i>
+              </button>
+            </td>
+          </tr>
+
+          <tr *ngIf="usuariosFiltrados.length === 0">
+            <td colspan="7" class="text-muted py-4">
+              No hay usuarios para mostrar.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal editar usuario -->
+<div class="modal-backdrop-custom" *ngIf="modalAbierto">
+  <div class="modal-card-custom">
+
+    <div class="modal-header-custom bg-dark text-white">
+      <h5 class="modal-title mb-0">
+        Editar Usuario
+      </h5>
+
+      <button type="button" class="btn-close-white-custom" (click)="cerrarModal()">
+        ×
+      </button>
+    </div>
+
+    <div class="modal-body-custom">
+
+      <div class="mb-3">
+        <label class="form-label">Nombre</label>
+        <input type="text" class="form-control" [(ngModel)]="usuarioSeleccionado.nombre">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Correo</label>
+        <input type="email" class="form-control" [(ngModel)]="usuarioSeleccionado.correo">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Dirección</label>
+        <input type="text" class="form-control" [(ngModel)]="usuarioSeleccionado.direccion">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Contacto</label>
+        <input type="text" class="form-control" [(ngModel)]="usuarioSeleccionado.contacto">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Rol</label>
+        <select class="form-select" [(ngModel)]="usuarioSeleccionado.rol">
+          <option value="Cliente">Cliente</option>
+          <option value="Administrador">Administrador</option>
+        </select>
+      </div>
+
+      <hr>
+
+      <p class="fw-semibold mb-2">Cambiar contraseña</p>
+      <small class="text-muted d-block mb-3">
+        Deja estos campos vacíos si no deseas cambiar la contraseña.
+      </small>
+
+      <div class="mb-3">
+        <label class="form-label">Nueva contraseña</label>
+        <input type="password" class="form-control" [(ngModel)]="nuevaPassword">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Confirmar contraseña</label>
+        <input type="password" class="form-control" [(ngModel)]="confirmarPassword">
+      </div>
+
+    </div>
+
+    <div class="modal-footer-custom">
+      <button class="btn btn-secondary" type="button" (click)="cerrarModal()">
+        Cancelar
+      </button>
+
+      <button class="btn btn-primary" type="button" (click)="guardarUsuario()">
+        Guardar Usuario
+      </button>
+    </div>
+
+  </div>
+</div>

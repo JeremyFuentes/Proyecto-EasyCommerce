@@ -1,0 +1,47 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.servicios {
+  width: 100%;
+  min-height: 70vh;
+  background-color: #ffffff;
+}
+
+.servicios h2 {
+  font-size: 36px;
+  color: #111;
+}
+
+.descripcion-principal {
+  max-width: 720px;
+  margin: 0 auto;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.servicio-card {
+  background-color: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #eeeeee;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.07);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.servicio-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.12);
+}
+
+.servicio-card i {
+  color: #111;
+}
+
+.servicio-card h5 {
+  color: #111;
+}
+
+.servicio-card p {
+  line-height: 1.6;
+}

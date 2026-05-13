@@ -1,0 +1,297 @@
+<!-- Breadcrumb -->
+<div class="container mt-4">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <button class="breadcrumb-link">Home</button>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">
+        Cart
+      </li>
+    </ol>
+  </nav>
+</div>
+
+<!-- CART CONTENT -->
+<section class="py-5 carrito-page">
+  <div class="container">
+    <h3 class="fw-bold mb-4">Tu carrito</h3>
+
+    <div *ngIf="mensajeError" class="alert alert-danger">
+      {{ mensajeError }}
+    </div>
+
+    <div *ngIf="mensaje" class="alert alert-success">
+      {{ mensaje }}
+    </div>
+
+    <div class="row">
+
+      <!-- Lista de productos -->
+      <div class="col-lg-8">
+        <div class="d-flex flex-column gap-3">
+
+          <div *ngIf="carrito.length === 0" class="carrito-vacio text-center text-muted">
+            <i class="fa fa-shopping-cart fa-3x mb-3"></i>
+            <p class="mb-0">Tu carrito está vacío.</p>
+          </div>
+
+          <div class="cart-item" *ngFor="let item of carrito">
+            <div class="row align-items-center g-3">
+
+              <div class="col-12 col-md-2 text-center">
+                <img [src]="item.imagen" [alt]="item.nombre" class="cart-img">
+              </div>
+
+              <div class="col-12 col-md-4">
+                <h5 class="fw-bold mb-1">{{ item.nombre }}</h5>
+                <p class="text-muted small mb-0">
+                  {{ item.descripcion }}
+                </p>
+              </div>
+
+              <div class="col-6 col-md-2">
+                <span class="fw-semibold">
+                  ${{ item.precio.toFixed(2) }}
+                </span>
+              </div>
+
+              <div class="col-6 col-md-2">
+                <div class="qty-control">
+                  <button class="qty-btn" (click)="disminuirCantidad(item)">
+                    -
+                  </button>
+
+                  <span class="fw-semibold">
+                    {{ item.cantidad }}
+                  </span>
+
+                  <button class="qty-btn" (click)="aumentarCantidad(item)">
+                    +
+                  </button>
+                </div>
+              </div>
+
+              <div class="col-12 col-md-2 text-md-end">
+                <button class="btn btn-outline-danger rounded-pill" (click)="eliminarProducto(item.id)">
+                  <i class="fa fa-trash"></i>
+                </button>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Resumen del pedido -->
+      <div class="col-lg-4 mt-4 mt-lg-0">
+        <div class="summary-box">
+          <h5 class="fw-bold mb-4">Resumen de la orden</h5>
+
+          <div class="d-flex justify-content-between mb-2">
+            <span>Subtotal</span>
+            <span class="fw-semibold">${{ subtotal.toFixed(2) }}</span>
+          </div>
+
+          <div class="d-flex justify-content-between mb-2">
+            <span>Descuento</span>
+            <span class="text-danger fw-semibold">
+              -${{ descuento.toFixed(2) }}
+            </span>
+          </div>
+
+          <div class="d-flex justify-content-between mb-3">
+            <span>Envío</span>
+            <span class="fw-semibold">${{ envio.toFixed(2) }}</span>
+          </div>
+
+          <!-- Código de descuento -->
+          <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="Código de descuento" [(ngModel)]="codigoDescuento">
+
+            <button class="btn btn-outline-secondary" type="button" (click)="aplicarCodigo()">
+              Aplicar
+            </button>
+          </div>
+
+          <hr>
+
+          <div class="d-flex justify-content-between mb-3">
+            <strong>Total</strong>
+            <strong>${{ total.toFixed(2) }}</strong>
+          </div>
+
+          <button class="btn-checkout" (click)="finalizarCompra()" [disabled]="carrito.length === 0">
+            Finalizar Compra
+            <i class="fa fa-arrow-right ms-2"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Modal para Confirmación de Dirección y Método de Pago -->
+<div class="modal-backdrop-custom" *ngIf="mostrarModalCompra">
+  <div class="modal-card-custom">
+
+    <div class="modal-header-custom bg-primary text-white">
+      <h5 class="modal-title mb-0">
+        Confirmar información y método de pago
+      </h5>
+
+      <button type="button" class="btn-close-white-custom" (click)="cerrarModalCompra()">
+        ×
+      </button>
+    </div>
+
+    <div class="modal-body-custom">
+      <p class="mb-2 fw-semibold">¿Tu dirección está correcta?</p>
+      <p class="text-muted">{{ direccionUsuario }}</p>
+
+      <hr>
+
+      <p class="mb-2 fw-semibold">Selecciona un método de pago:</p>
+
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="metodoPago" id="pagoContraEntrega" value="contraentrega"
+          [(ngModel)]="metodoPago" (change)="cambiarMetodoPago()">
+
+        <label class="form-check-label" for="pagoContraEntrega">
+          Contraentrega (Pagar al recibir)
+        </label>
+      </div>
+
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="metodoPago" id="pagoTarjeta" value="tarjeta"
+          [(ngModel)]="metodoPago" (change)="cambiarMetodoPago()">
+
+        <label class="form-check-label" for="pagoTarjeta">
+          Tarjeta de crédito o débito
+        </label>
+      </div>
+      <div *ngIf="metodoPago === 'tarjeta'" class="tarjeta-box mt-3">
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Selecciona una opción</label>
+
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="opcionTarjeta" value="guardada"
+              [(ngModel)]="opcionTarjeta" [disabled]="metodosPago.length === 0">
+            <label class="form-check-label">
+              Usar tarjeta guardada
+            </label>
+          </div>
+
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="opcionTarjeta" value="nueva" [(ngModel)]="opcionTarjeta">
+            <label class="form-check-label">
+              Usar nueva tarjeta
+            </label>
+          </div>
+        </div>
+
+        <!-- Tarjetas guardadas -->
+        <div *ngIf="opcionTarjeta === 'guardada'" class="mb-3">
+          <label class="form-label">Tarjetas guardadas</label>
+
+          <select class="form-select" [(ngModel)]="metodoPagoSeleccionado" name="metodoPagoSeleccionado">
+            <option value="">Seleccione una tarjeta</option>
+
+            <option *ngFor="let metodo of metodosPago" [value]="metodo.MetodoPagoID || metodo._id">
+              {{ metodo.TipoTarjeta }} - **** {{ metodo.UltimosDigitos }} - {{ metodo.Titular }}
+            </option>
+          </select>
+
+          <small class="text-muted" *ngIf="metodosPago.length === 0">
+            No tienes tarjetas guardadas. Agrega una nueva para continuar.
+          </small>
+        </div>
+
+        <!-- Nueva tarjeta -->
+        <div *ngIf="opcionTarjeta === 'nueva'" class="nueva-tarjeta-box">
+          <div class="row g-3">
+
+            <div class="col-md-6">
+              <label class="form-label">Tipo de tarjeta</label>
+              <select class="form-select" [(ngModel)]="nuevaTarjeta.TipoTarjeta" name="tipoTarjetaCarrito">
+                <option value="Crédito">Crédito</option>
+                <option value="Débito">Débito</option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Titular</label>
+              <input type="text" class="form-control" [(ngModel)]="nuevaTarjeta.Titular" name="titularTarjetaCarrito"
+                placeholder="Nombre del titular">
+            </div>
+
+            <div class="col-md-8">
+              <label class="form-label">Número de tarjeta</label>
+              <input type="text" class="form-control" [(ngModel)]="nuevaTarjeta.NumeroTarjeta"
+                name="numeroTarjetaCarrito" placeholder="0000 0000 0000 0000">
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">Expiración</label>
+              <input type="text" class="form-control" [(ngModel)]="nuevaTarjeta.Expiracion"
+                name="expiracionTarjetaCarrito" placeholder="MM/AA">
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="modal-footer-custom">
+      <button class="btn btn-secondary" (click)="cerrarModalCompra()">
+        Cancelar
+      </button>
+
+      <button class="btn btn-primary" (click)="confirmarCompra()">
+        Confirmar compra
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal de Validación de Contacto -->
+<div class="modal-backdrop-custom" *ngIf="mostrarModalContacto">
+  <div class="modal-card-custom">
+
+    <div class="modal-header-custom bg-warning">
+      <h5 class="modal-title mb-0">
+        Información Incompleta
+      </h5>
+
+      <button type="button" class="btn-close-dark-custom" (click)="cerrarModalContacto()">
+        ×
+      </button>
+    </div>
+
+    <div class="modal-body-custom">
+      <p>Debes completar tu dirección y contacto antes de realizar una compra.</p>
+
+      <ul class="text-danger fw-semibold mb-0">
+        <li *ngFor="let campo of camposFaltantes">
+          {{ campo }}
+        </li>
+      </ul>
+    </div>
+
+    <div class="modal-footer-custom">
+      <button type="button" class="btn btn-secondary" (click)="cerrarModalContacto()">
+        Cancelar
+      </button>
+
+      <button type="button" class="btn btn-primary" (click)="cerrarModalContacto()">
+        Ir a ajustes
+      </button>
+    </div>
+
+  </div>
+</div>

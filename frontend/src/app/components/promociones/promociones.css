@@ -1,0 +1,62 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.hero-promociones {
+  background: linear-gradient(135deg, #f8f9fa, #ffffff);
+  border-bottom: 1px solid #eee;
+}
+
+.hero-promociones h1 {
+  color: #111;
+  font-size: 42px;
+}
+
+.hero-promociones p {
+  font-size: 16px;
+}
+
+.promociones {
+  background-color: #ffffff;
+}
+
+.card-promocion {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.card-promocion:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
+}
+
+.card-img-promocion {
+  width: 100%;
+  height: 180px;
+  object-fit: contain;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.badge-descuento {
+  z-index: 2;
+  font-size: 0.8rem;
+}
+
+.precio-anterior {
+  font-size: 0.9rem;
+}
+
+.promo-empty {
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-body {
+  padding: 20px;
+}

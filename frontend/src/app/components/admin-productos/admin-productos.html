@@ -1,0 +1,252 @@
+<div class="admin-layout">
+
+  <!-- Barra lateral -->
+  <div class="sidebar">
+  <div class="sidebar-title">
+    <i class="fa fa-cubes"></i>
+    <span>Administración</span>
+  </div>
+
+  <nav class="nav flex-column sidebar-nav">
+  <a
+    class="nav-link"
+    [class.active]="vistaActual === 'admin-productos'"
+    href="#"
+    (click)="irA('admin-productos', $event)"
+  >
+    <i class="fa fa-box"></i>
+    <span>Productos</span>
+  </a>
+
+  <a
+    class="nav-link"
+    [class.active]="vistaActual === 'admin-usuarios'"
+    href="#"
+    (click)="irA('admin-usuarios', $event)"
+  >
+    <i class="fa fa-users"></i>
+    <span>Usuarios</span>
+  </a>
+
+  <a
+    class="nav-link"
+    [class.active]="vistaActual === 'admin-pedidos'"
+    href="#"
+    (click)="irA('admin-pedidos', $event)"
+  >
+    <i class="fa fa-truck"></i>
+    <span>Pedidos</span>
+  </a>
+
+  <a
+    class="nav-link"
+    [class.active]="vistaActual === 'admin-auxiliares'"
+    href="#"
+    (click)="irA('admin-auxiliares', $event)"
+  >
+    <i class="fa fa-tags"></i>
+    <span>Catálogos</span>
+  </a>
+
+  <a
+    class="nav-link logout-link"
+    href="#"
+    (click)="logout($event)"
+  >
+    <i class="fa fa-right-from-bracket"></i>
+    <span>Cerrar sesión</span>
+  </a>
+</nav>
+</div>
+
+  <!-- Contenido principal -->
+  <div class="content">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h3>Gestión de Productos</h3>
+
+      <button class="btn btn-success" (click)="nuevoProducto()">
+        Agregar Producto
+      </button>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filters-card">
+
+      <div class="row g-3 align-items-end">
+
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">Buscar</label>
+          <input type="text" class="form-control" placeholder="Nombre o SKU" [(ngModel)]="buscarProducto">
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label fw-semibold">Categoría</label>
+          <select class="form-select" [(ngModel)]="filtroCategoria">
+            <option value="">Todas</option>
+            <option *ngFor="let categoria of categorias" [value]="categoria">
+              {{ categoria }}
+            </option>
+          </select>
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label fw-semibold">Marca</label>
+          <select class="form-select" [(ngModel)]="filtroMarca">
+            <option value="">Todas</option>
+            <option *ngFor="let marca of marcas" [value]="marca">
+              {{ marca }}
+            </option>
+          </select>
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label fw-semibold">Estado</label>
+          <select class="form-select" [(ngModel)]="filtroEstado">
+            <option value="">Todos</option>
+            <option value="true">Activo</option>
+            <option value="false">Inactivo</option>
+          </select>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">Precio máximo</label>
+          <input type="range" class="form-range" min="0" max="2000" step="20" [(ngModel)]="filtroPrecio">
+          <span class="fw-semibold">${{ filtroPrecio }}</span>
+        </div>
+
+        <div class="col-md-6">
+          <button class="btn btn-dark w-100" (click)="aplicarFiltros()">
+            Aplicar filtros
+          </button>
+        </div>
+
+        <div class="col-md-6">
+          <button class="btn btn-outline-dark w-100" (click)="eliminarFiltros()">
+            Eliminar filtros
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <p class="mb-0 text-muted">
+        Mostrando {{ productosFiltrados.length }} productos
+      </p>
+
+      <p class="mb-0 text-muted">
+        Página {{ paginaActual }} de {{ totalPaginas }}
+      </p>
+    </div>
+
+    <p *ngIf="mensaje" class="text-danger">
+      {{ mensaje }}
+    </p>
+
+    <!-- Tabla de productos -->
+    <div class="table-responsive">
+      <table class="table table-striped align-middle">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Precio</th>
+            <th>Stock</th>
+            <th>Categoría</th>
+            <th>Marca</th>
+            <th>Proveedor</th>
+            <th>SKU</th>
+            <th>Descripción</th>
+            <th>Estado</th>
+            <th>Imagen</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let producto of productosPaginados">
+            <td>{{ obtenerId(producto) | slice:0:8 }}</td>
+            <td>{{ obtenerNombre(producto) }}</td>
+            <td>${{ obtenerPrecio(producto).toFixed(2) }}</td>
+            <td>
+              <div class="stock-box" [ngClass]="obtenerClaseStock(producto)">
+                <span class="stock-numero">
+                  {{ obtenerStock(producto) }}
+                </span>
+
+                <small>
+                  {{ obtenerTextoStock(producto) }}
+                </small>
+              </div>
+            </td>
+            <td>{{ obtenerCategoria(producto) || 'N/A' }}</td>
+            <td>{{ obtenerMarca(producto) || 'N/A' }}</td>
+            <td>{{ obtenerProveedor(producto) || 'N/A' }}</td>
+            <td>{{ obtenerSku(producto) }}</td>
+            <td>
+              <span class="descripcion-admin">
+                {{ obtenerDescripcion(producto) }}
+              </span>
+            </td>
+            <td>
+              <span class="badge" [class.bg-success]="obtenerEstado(producto)"
+                [class.bg-secondary]="!obtenerEstado(producto)">
+                {{ obtenerEstado(producto) ? 'Activo' : 'Inactivo' }}
+              </span>
+            </td>
+            <td>
+              <img [src]="obtenerImagen(producto)" [alt]="obtenerNombre(producto)" class="product-img-admin">
+            </td>
+            <td>
+              <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-outline-primary" (click)="editar(producto)">
+                  <i class="fa fa-pen"></i>
+                </button>
+
+                <button class="btn btn-sm btn-outline-danger" (click)="eliminarProducto(producto)">
+                  <i class="fa fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          <tr *ngIf="productosPaginados.length === 0">
+            <td colspan="12" class="text-center text-muted py-4">
+              No hay productos para mostrar.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Paginación -->
+    <div class="d-flex justify-content-center mt-4" *ngIf="totalPaginas > 1">
+      <nav>
+        <ul class="pagination">
+
+          <li class="page-item" [class.disabled]="paginaActual === 1">
+            <button class="page-link" (click)="cambiarPagina(paginaActual - 1)">
+              Anterior
+            </button>
+          </li>
+
+          <li class="page-item" *ngFor="let pagina of obtenerPaginas()" [class.active]="pagina === paginaActual">
+            <button class="page-link" (click)="cambiarPagina(pagina)">
+              {{ pagina }}
+            </button>
+          </li>
+
+          <li class="page-item" [class.disabled]="paginaActual === totalPaginas">
+            <button class="page-link" (click)="cambiarPagina(paginaActual + 1)">
+              Siguiente
+            </button>
+          </li>
+
+        </ul>
+      </nav>
+    </div>
+
+  </div>
+</div>

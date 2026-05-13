@@ -1,0 +1,168 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.navbar {
+  width: 100%;
+  background-color: #ffffff;
+}
+
+.container {
+  width: 100%;
+  max-width: 1320px;
+}
+
+.navbar-brand {
+  font-size: 24px;
+  color: #111;
+  text-decoration: none;
+}
+
+.navbar-brand img {
+  object-fit: contain;
+}
+
+.navbar-nav {
+  gap: 12px;
+}
+
+.nav-link {
+  color: #222;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.nav-link:hover {
+  color: #000;
+  text-decoration: underline;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: nowrap;
+}
+
+.navbar-icons {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
+.search-box {
+  position: relative;
+  width: 280px;
+}
+
+.search-input {
+  width: 100%;
+  border-radius: 50px;
+  padding: 10px 46px 10px 18px;
+  border: 1px solid #ced4da;
+}
+
+.search-input:focus {
+  border-color: #111;
+  box-shadow: 0 0 0 0.15rem rgba(0, 0, 0, 0.12);
+}
+
+.search-btn {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background-color: #111;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.search-btn:hover {
+  background-color: #333;
+}
+
+.icon-link,
+.user-icon {
+  width: 28px;
+  height: 28px;
+  font-size: 19px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.icon-link:hover {
+  color: #555 !important;
+}
+
+.user-icon {
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.dropdown-menu {
+  border-radius: 10px;
+  border: 1px solid #e5e5e5;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.dropdown-item {
+  font-size: 15px;
+  padding: 10px 18px;
+}
+
+.dropdown-item:hover {
+  background-color: #f5f5f5;
+}
+
+#nombreUsuario {
+  font-size: 15px;
+}
+
+@media (max-width: 991px) {
+  .navbar-right {
+    margin-top: 18px;
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 14px;
+  }
+
+  .search-box {
+    width: 100%;
+  }
+
+  .navbar-icons {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 16px;
+  }
+
+  .navbar-nav {
+    margin-top: 16px;
+  }
+}
+
+.nombre-usuario {
+  font-size: 15px;
+  max-width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-dropdown {
+  display: flex;
+  align-items: center;
+}

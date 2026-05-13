@@ -1,0 +1,222 @@
+<div class="admin-layout">
+
+  <!-- Barra lateral -->
+  <div class="sidebar">
+  <div class="sidebar-title">
+    <i class="fa fa-cubes"></i>
+    <span>Administración</span>
+  </div>
+
+  <nav class="nav flex-column sidebar-nav">
+  <a
+    class="nav-link"
+    [class.active]="vistaActual === 'admin-productos'"
+    href="#"
+    (click)="irA('admin-productos', $event)"
+  >
+    <i class="fa fa-box"></i>
+    <span>Productos</span>
+  </a>
+
+  <a
+    class="nav-link"
+    [class.active]="vistaActual === 'admin-usuarios'"
+    href="#"
+    (click)="irA('admin-usuarios', $event)"
+  >
+    <i class="fa fa-users"></i>
+    <span>Usuarios</span>
+  </a>
+
+  <a
+    class="nav-link"
+    [class.active]="vistaActual === 'admin-pedidos'"
+    href="#"
+    (click)="irA('admin-pedidos', $event)"
+  >
+    <i class="fa fa-truck"></i>
+    <span>Pedidos</span>
+  </a>
+
+  <a
+    class="nav-link"
+    [class.active]="vistaActual === 'admin-auxiliares'"
+    href="#"
+    (click)="irA('admin-auxiliares', $event)"
+  >
+    <i class="fa fa-tags"></i>
+    <span>Catálogos</span>
+  </a>
+
+  <a
+    class="nav-link logout-link"
+    href="#"
+    (click)="logout($event)"
+  >
+    <i class="fa fa-right-from-bracket"></i>
+    <span>Cerrar sesión</span>
+  </a>
+</nav>
+</div>
+
+  <div class="content">
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+      <div>
+        <h3 class="mb-1">Pedidos por Usuario</h3>
+        <p class="text-muted mb-0">
+          Gestiona órdenes, facturas y estados de entrega.
+        </p>
+      </div>
+
+      <button class="btn btn-dark" type="button" (click)="cargarOrdenes()">
+        Actualizar
+      </button>
+    </div>
+
+    <div *ngIf="mensaje" class="alert alert-success">
+      {{ mensaje }}
+    </div>
+
+    <div *ngIf="mensajeError" class="alert alert-danger">
+      {{ mensajeError }}
+    </div>
+
+    <div *ngIf="cargando" class="text-center py-5">
+      <div class="spinner-border text-dark mb-3" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+
+      <p class="text-muted mb-0">
+        Cargando pedidos...
+      </p>
+    </div>
+
+    <div *ngIf="!cargando && ordenesAgrupadas.length === 0" class="empty-box">
+      No hay órdenes registradas.
+    </div>
+
+    <div *ngIf="!cargando && ordenesAgrupadas.length > 0">
+
+      <div class="pedido-grupo" *ngFor="let grupo of ordenesAgrupadas">
+
+        <div class="grupo-header">
+          <div>
+            <h5 class="mb-1">
+              {{ grupo.usuario?.nombre || 'Usuario no encontrado' }}
+            </h5>
+
+            <p class="text-muted mb-0">
+              {{ grupo.usuario?.correo || 'Sin correo' }}
+            </p>
+
+            <small class="text-muted" *ngIf="grupo.usuario?.direccion">
+              Dirección: {{ grupo.usuario?.direccion }}
+            </small>
+          </div>
+
+          <span class="badge bg-dark">
+            {{ grupo.ordenes.length }} orden(es)
+          </span>
+        </div>
+
+        <div class="orden-card" *ngFor="let orden of grupo.ordenes">
+
+          <div class="orden-header">
+            <div>
+              <h5 class="fw-bold mb-1">
+                Orden #{{ orden.ordenId }}
+              </h5>
+
+              <p class="text-muted mb-0">
+                Fecha: {{ formatearFecha(orden.fechaOrden) }}
+              </p>
+            </div>
+
+            <div class="text-md-end">
+              <span class="badge estado-badge" [ngClass]="obtenerClaseEstado(orden.estadoGeneral)">
+                {{ orden.estadoGeneral }}
+              </span>
+
+              <p class="text-muted small mb-0 mt-2">
+                {{ calcularTotalItems(orden) }} producto(s)
+              </p>
+            </div>
+          </div>
+
+          <div class="factura-table">
+            <div class="factura-row factura-row-head">
+              <div>Producto</div>
+              <div class="text-center">Cantidad</div>
+              <div class="text-end">Precio unitario</div>
+              <div class="text-end">Total</div>
+            </div>
+
+            <div class="factura-row" *ngFor="let item of orden.detalles">
+              <div class="factura-producto">
+                <img class="factura-img" [src]="item.imagen" [alt]="item.nombre">
+
+                <div>
+                  <p class="fw-semibold mb-1">
+                    {{ item.nombre }}
+                  </p>
+
+                  <span class="badge" [ngClass]="obtenerClaseEstado(item.estado)">
+                    {{ item.estado }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="text-center">
+                {{ item.cantidad }}
+              </div>
+
+              <div class="text-end">
+                ${{ item.precioUnitario.toFixed(2) }}
+              </div>
+
+              <div class="text-end fw-semibold">
+                ${{ item.totalLinea.toFixed(2) }}
+              </div>
+            </div>
+          </div>
+
+          <div class="orden-footer">
+            <div class="factura-resumen">
+              <div>
+                <span>Subtotal</span>
+                <strong>${{ orden.subtotal.toFixed(2) }}</strong>
+              </div>
+
+              <div>
+                <span>Envío</span>
+                <strong>${{ orden.envio.toFixed(2) }}</strong>
+              </div>
+
+              <div>
+                <span>Descuento</span>
+                <strong>-${{ orden.descuento.toFixed(2) }}</strong>
+              </div>
+
+              <div class="factura-total">
+                <span>Total</span>
+                <strong>${{ orden.total.toFixed(2) }}</strong>
+              </div>
+            </div>
+
+            <div class="orden-actions">
+              <button class="btn btn-outline-dark" type="button" (click)="avanzarEstadoOrden(orden)"
+                [disabled]="obtenerEstadoIdOrden(orden) >= 5">
+                {{ obtenerTextoBoton(orden) }}
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>

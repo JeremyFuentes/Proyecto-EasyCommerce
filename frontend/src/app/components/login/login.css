@@ -1,0 +1,193 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.login-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fb, #eef1f5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 15px;
+}
+
+.login-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 440px;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 35px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  animation: aparecer 0.25s ease-in-out;
+}
+
+.login-card h3 {
+  font-weight: 700;
+  margin-bottom: 25px;
+  color: #1f2428;
+}
+
+.form-label {
+  font-weight: 600;
+  color: #333;
+}
+
+.form-control {
+  height: 46px;
+  border-radius: 10px;
+  border: 1px solid #d5d5d5;
+}
+
+.form-control:focus {
+  border-color: #111;
+  box-shadow: 0 0 0 0.15rem rgba(0, 0, 0, 0.12);
+}
+
+.btn {
+  height: 46px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.btn-primary {
+  background-color: #111;
+  border-color: #111;
+}
+
+.btn-primary:hover {
+  background-color: #2b2b2b;
+  border-color: #2b2b2b;
+}
+
+.btn-success {
+  background-color: #198754;
+  border-color: #198754;
+}
+
+.google-btn {
+  border-radius: 10px;
+}
+
+.login-card a {
+  color: #111;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.login-card a:hover {
+  text-decoration: underline;
+}
+
+.text-danger,
+.text-success {
+  font-size: 14px;
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.separador-login {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 18px 0;
+  color: #777;
+  font-size: 14px;
+}
+
+.separador-login::before,
+.separador-login::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background-color: #dddddd;
+}
+
+.google-login-box {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+#googleButton {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* Tabla admin más controlada */
+.table-responsive {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.table {
+  min-width: 1250px;
+  font-size: 14px;
+}
+
+.table th,
+.table td {
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* Descripción más compacta */
+.descripcion-admin {
+  max-width: 160px;
+}
+
+/* Stock más compacto */
+.stock-box {
+  min-width: 78px;
+  padding: 5px 8px;
+}
+
+.stock-numero {
+  font-size: 14px;
+}
+
+.stock-box small {
+  font-size: 10px;
+}
+
+/* Mantener acciones visibles */
+.table th:last-child,
+.table td:last-child {
+  position: sticky;
+  right: 0;
+  background-color: #ffffff;
+  z-index: 2;
+  min-width: 95px;
+}
+
+.table thead th:last-child {
+  background-color: #f8f9fa;
+  z-index: 3;
+}
+
+/* Botones de acciones compactos */
+.table td:last-child .btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
