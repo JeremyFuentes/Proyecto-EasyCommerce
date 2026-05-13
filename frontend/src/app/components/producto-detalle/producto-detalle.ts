@@ -1,5 +1,7 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { ProductoService } from '../../../services/producto.service';
 
 @Component({
@@ -9,10 +11,7 @@ import { ProductoService } from '../../../services/producto.service';
   templateUrl: './producto-detalle.html',
   styleUrl: './producto-detalle.css'
 })
-export class ProductoDetalleComponent implements OnChanges {
-  @Input() productoSeleccionado: any | null = null;
-  @Input() cambiarVista!: (vista: string) => void;
-
+export class ProductoDetalleComponent implements OnInit, OnDestroy {
   producto: any | null = null;
   productosRelacionados: any[] = [];
 
@@ -29,41 +28,48 @@ export class ProductoDetalleComponent implements OnChanges {
   esFavorito = false;
   cargandoFavorito = false;
 
-  constructor(private productoService: ProductoService) {}
+  private routeSubscription?: Subscription;
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['productoSeleccionado']) {
-      this.cargarDetalleProducto();
-    }
+  constructor(
+    private productoService: ProductoService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
+
+  ngOnInit(): void {
+    this.routeSubscription = this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+
+      if (!id) {
+        this.producto = null;
+        return;
+      }
+
+      this.cargarDetalleProducto(id);
+    });
   }
 
-  cargarDetalleProducto(): void {
+  ngOnDestroy(): void {
+    this.routeSubscription?.unsubscribe();
+  }
+
+  cargarDetalleProducto(id: string): void {
     this.mensaje = '';
     this.mensajeError = '';
     this.cantidad = 1;
     this.esFavorito = false;
-
-    if (!this.productoSeleccionado) {
-      this.producto = null;
-      return;
-    }
-
-    const id = this.obtenerId(this.productoSeleccionado);
-
-    if (!id) {
-      this.producto = this.productoSeleccionado;
-      this.prepararImagenesDesdeProducto();
-      this.cargarProductosRelacionados();
-      return;
-    }
-
     this.cargando = true;
 
     this.productoService.obtenerProductoPorId(id).subscribe({
       next: (respuesta: any) => {
         this.cargando = false;
 
-        this.producto = respuesta?.data || respuesta || this.productoSeleccionado;
+        this.producto = respuesta?.data || respuesta || null;
+
+        if (!this.producto) {
+          this.mensajeError = 'No se encontró el producto solicitado.';
+          return;
+        }
 
         this.cargarImagenesProducto();
         this.cargarProductosRelacionados();
@@ -71,12 +77,8 @@ export class ProductoDetalleComponent implements OnChanges {
       },
       error: () => {
         this.cargando = false;
-
-        this.producto = this.productoSeleccionado;
-
-        this.cargarImagenesProducto();
-        this.cargarProductosRelacionados();
-        this.verificarSiEsFavorito();
+        this.producto = null;
+        this.mensajeError = 'No se pudo cargar el detalle del producto.';
       }
     });
   }
@@ -181,9 +183,7 @@ export class ProductoDetalleComponent implements OnChanges {
   }
 
   verificarSiEsFavorito(): void {
-    const token = localStorage.getItem('token');
-
-    if (!token || !this.producto) {
+    if (!this.estaLogueado() || !this.producto) {
       this.esFavorito = false;
       return;
     }
@@ -206,13 +206,11 @@ export class ProductoDetalleComponent implements OnChanges {
   }
 
   alternarFavorito(): void {
-    const token = localStorage.getItem('token');
-
-    if (!token) {
-  this.accionPendiente = 'guardar productos en favoritos';
-  this.mostrarModalLogin = true;
-  return;
-}
+    if (!this.estaLogueado()) {
+      this.accionPendiente = 'guardar productos en favoritos';
+      this.mostrarModalLogin = true;
+      return;
+    }
 
     if (!this.producto) {
       this.mostrarMensajeError('No se encontró el producto seleccionado.');
@@ -325,13 +323,11 @@ export class ProductoDetalleComponent implements OnChanges {
   }
 
   agregarAlCarrito(): void {
-    const token = localStorage.getItem('token');
-
-    if (!token) {
-  this.accionPendiente = 'agregar productos al carrito';
-  this.mostrarModalLogin = true;
-  return;
-}
+    if (!this.estaLogueado()) {
+      this.accionPendiente = 'agregar productos al carrito';
+      this.mostrarModalLogin = true;
+      return;
+    }
 
     if (!this.producto) {
       this.mostrarMensajeError('No se encontró el producto seleccionado.');
@@ -371,10 +367,7 @@ export class ProductoDetalleComponent implements OnChanges {
 
   irALogin(): void {
     this.mostrarModalLogin = false;
-
-    if (this.cambiarVista) {
-      this.cambiarVista('login');
-    }
+    this.router.navigate(['/login']);
   }
 
   volverAProductos(event?: Event): void {
@@ -382,19 +375,27 @@ export class ProductoDetalleComponent implements OnChanges {
       event.preventDefault();
     }
 
-    if (this.cambiarVista) {
-      this.cambiarVista('lista');
-    }
+    this.router.navigate(['/productos']);
   }
 
   verDetalleRelacionado(producto: any): void {
-    this.productoSeleccionado = { ...producto };
-    this.cargarDetalleProducto();
+    const productoId = this.obtenerId(producto);
+
+    if (!productoId) {
+      this.mostrarMensajeError('No se pudo abrir el detalle del producto relacionado.');
+      return;
+    }
+
+    this.router.navigate(['/productos', productoId]);
 
     window.scrollTo({
       top: 0,
       behavior: 'smooth'
     });
+  }
+
+  estaLogueado(): boolean {
+    return !!localStorage.getItem('token') && localStorage.getItem('tipoLogin') === 'usuario';
   }
 
   mostrarMensaje(texto: string): void {
@@ -502,7 +503,7 @@ export class ProductoDetalleComponent implements OnChanges {
     }
 
     if (imagen.startsWith('/')) {
-      return `http://localhost:3000${imagen}`;
+      return `https://easycommerce.onrender.com${imagen}`;
     }
 
     return imagen;

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductoService } from '../../../services/producto.service';
 import { MetodoPagoService } from '../../../services/metodo-pago.service';
+import { Router } from '@angular/router';
 
 interface ItemCarrito {
   id: number | string;
@@ -55,7 +56,8 @@ export class CarritoComponent implements OnInit {
 
   constructor(
     private productoService: ProductoService,
-    private metodoPagoService: MetodoPagoService
+    private metodoPagoService: MetodoPagoService,
+    private router: Router
   ) { }
 
   metodosPago: MetodoPago[] = [];
@@ -70,6 +72,14 @@ export class CarritoComponent implements OnInit {
   };
 
   ngOnInit(): void {
+    const token = localStorage.getItem('token');
+    const tipoLogin = localStorage.getItem('tipoLogin');
+
+    if (!token || tipoLogin !== 'usuario') {
+      this.router.navigate(['/login']);
+      return;
+    }
+
     this.cargarCarrito();
   }
 
@@ -77,7 +87,7 @@ export class CarritoComponent implements OnInit {
     const usuarioId = localStorage.getItem('usuarioId');
 
     if (!usuarioId) {
-      this.mensajeError = 'No se encontró el usuario en sesión.';
+      this.router.navigate(['/login']);
       return;
     }
 
@@ -134,7 +144,7 @@ export class CarritoComponent implements OnInit {
     }
 
     if (imagen.startsWith('/')) {
-      return `http://localhost:3000${imagen}`;
+      return `https://easycommerce.onrender.com${imagen}`;
     }
 
     return imagen;
@@ -372,5 +382,18 @@ export class CarritoComponent implements OnInit {
 
   cerrarModalContacto(): void {
     this.mostrarModalContacto = false;
+  }
+
+  irADashboard(): void {
+    this.router.navigate(['/dashboard']);
+  }
+
+  irAConfiguracion(): void {
+    this.cerrarModalContacto();
+    this.router.navigate(['/configuracion']);
+  }
+
+  irAProductos(): void {
+    this.router.navigate(['/productos']);
   }
 }

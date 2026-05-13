@@ -1,6 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
 import { ProductoService } from '../../../services/producto.service';
 
 type TipoGestion = 'categorias' | 'marcas' | 'proveedores';
@@ -8,15 +9,11 @@ type TipoGestion = 'categorias' | 'marcas' | 'proveedores';
 @Component({
   selector: 'app-admin-auxiliares',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './admin-auxiliares.html',
   styleUrl: './admin-auxiliares.css'
 })
 export class AdminAuxiliaresComponent implements OnInit {
-  @Input() cambiarVista!: (vista: string) => void;
-  @Input() cerrarSesion!: () => void;
-  @Input() vistaActual = '';
-
   seccionActiva: TipoGestion = 'categorias';
 
   categorias: any[] = [];
@@ -37,7 +34,10 @@ export class AdminAuxiliaresComponent implements OnInit {
   mensaje = '';
   mensajeError = '';
 
-  constructor(private productoService: ProductoService) { }
+  constructor(
+    private productoService: ProductoService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.cargarDatos();
@@ -160,11 +160,6 @@ export class AdminAuxiliaresComponent implements OnInit {
         this.cargarDatos();
       },
       error: (error: any) => {
-        if (error.status === 409) {
-          this.mensajeError = error.error?.mensaje || 'Ya existe un registro con ese nombre.';
-          return;
-        }
-
         this.mensajeError = error.error?.mensaje || 'No se pudo guardar el registro.';
       }
     });
@@ -186,11 +181,6 @@ export class AdminAuxiliaresComponent implements OnInit {
         this.cargarDatos();
       },
       error: (error: any) => {
-        if (error.status === 409) {
-          this.mensajeError = error.error?.mensaje || 'Ya existe un registro con ese nombre.';
-          return;
-        }
-
         this.mensajeError = error.error?.mensaje || 'No se pudo guardar el registro.';
       }
     });
@@ -214,11 +204,6 @@ export class AdminAuxiliaresComponent implements OnInit {
         this.cargarDatos();
       },
       error: (error: any) => {
-        if (error.status === 409) {
-          this.mensajeError = error.error?.mensaje || 'Ya existe un registro con ese nombre.';
-          return;
-        }
-
         this.mensajeError = error.error?.mensaje || 'No se pudo guardar el registro.';
       }
     });
@@ -290,19 +275,17 @@ export class AdminAuxiliaresComponent implements OnInit {
     this.mensajeError = '';
   }
 
-  irA(vista: string, event?: Event): void {
-    if (event) event.preventDefault();
-
-    if (this.cambiarVista) {
-      this.cambiarVista(vista);
-    }
-  }
-
   logout(event: Event): void {
     event.preventDefault();
 
-    if (this.cerrarSesion) {
-      this.cerrarSesion();
-    }
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuarioId');
+    localStorage.removeItem('nombreUsuario');
+    localStorage.removeItem('correo');
+    localStorage.removeItem('rol');
+    localStorage.removeItem('tipoLogin');
+    sessionStorage.clear();
+
+    this.router.navigate(['/admin/login']);
   }
 }

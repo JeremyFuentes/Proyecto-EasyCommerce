@@ -1,22 +1,17 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
 import { ProductoService } from '../../../services/producto.service';
 
 @Component({
   selector: 'app-admin-productos',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './admin-productos.html',
   styleUrl: './admin-productos.css'
 })
 export class AdminProductosComponent implements OnInit {
-  @Input() cambiarVista!: (vista: string) => void;
-  @Input() cerrarSesion!: () => void;
-  @Input() editarProducto!: (producto: any) => void;
-  @Input() crearProducto!: () => void;
-  @Input() vistaActual = '';
-
   productos: any[] = [];
   productosFiltrados: any[] = [];
   productosPaginados: any[] = [];
@@ -36,7 +31,10 @@ export class AdminProductosComponent implements OnInit {
 
   mensaje = '';
 
-  constructor(private productoService: ProductoService) {}
+  constructor(
+    private productoService: ProductoService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.cargarProductos();
@@ -59,53 +57,76 @@ export class AdminProductosComponent implements OnInit {
   }
 
   nuevoProducto(): void {
-  if (this.crearProducto) {
-    this.crearProducto();
-    return;
+    this.router.navigate(['/admin/productos/nuevo']);
   }
 
-  if (this.cambiarVista) {
-    this.cambiarVista('admin-crear-producto');
-  }
-}
+  editar(producto: any): void {
+    const id = this.obtenerId(producto);
 
-esStockBajo(producto: any): boolean {
-  const stock = this.obtenerStock(producto);
-  return stock > 0 && stock < 10;
-}
+    if (!id) {
+      this.mensaje = 'No se encontró el ID del producto.';
+      return;
+    }
 
-esSinStock(producto: any): boolean {
-  const stock = this.obtenerStock(producto);
-  return stock <= 0;
-}
-
-obtenerClaseStock(producto: any): string {
-  const stock = this.obtenerStock(producto);
-
-  if (stock <= 0) {
-    return 'stock-sin';
+    this.router.navigate(['/admin/productos/editar', id]);
   }
 
-  if (stock < 10) {
-    return 'stock-bajo';
+  irA(ruta: string, event?: Event): void {
+    if (event) event.preventDefault();
+    this.router.navigate([ruta]);
   }
 
-  return 'stock-normal';
-}
+  logout(event: Event): void {
+    event.preventDefault();
 
-obtenerTextoStock(producto: any): string {
-  const stock = this.obtenerStock(producto);
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuarioId');
+    localStorage.removeItem('nombreUsuario');
+    localStorage.removeItem('correo');
+    localStorage.removeItem('rol');
+    localStorage.removeItem('tipoLogin');
+    sessionStorage.clear();
 
-  if (stock <= 0) {
-    return 'Sin stock';
+    this.router.navigate(['/admin/login']);
   }
 
-  if (stock < 10) {
-    return 'Stock bajo';
+  esStockBajo(producto: any): boolean {
+    const stock = this.obtenerStock(producto);
+    return stock > 0 && stock < 10;
   }
 
-  return 'Stock normal';
-}
+  esSinStock(producto: any): boolean {
+    const stock = this.obtenerStock(producto);
+    return stock <= 0;
+  }
+
+  obtenerClaseStock(producto: any): string {
+    const stock = this.obtenerStock(producto);
+
+    if (stock <= 0) {
+      return 'stock-sin';
+    }
+
+    if (stock < 10) {
+      return 'stock-bajo';
+    }
+
+    return 'stock-normal';
+  }
+
+  obtenerTextoStock(producto: any): string {
+    const stock = this.obtenerStock(producto);
+
+    if (stock <= 0) {
+      return 'Sin stock';
+    }
+
+    if (stock < 10) {
+      return 'Stock bajo';
+    }
+
+    return 'Stock normal';
+  }
 
   cargarFiltrosDesdeProductos(): void {
     this.categorias = [...new Set(
@@ -192,28 +213,6 @@ obtenerTextoStock(producto: any): string {
     return Array.from({ length: this.totalPaginas }, (_, index) => index + 1);
   }
 
-  irA(vista: string, event?: Event): void {
-    if (event) event.preventDefault();
-
-    if (this.cambiarVista) {
-      this.cambiarVista(vista);
-    }
-  }
-
-  logout(event: Event): void {
-    event.preventDefault();
-
-    if (this.cerrarSesion) {
-      this.cerrarSesion();
-    }
-  }
-
-  editar(producto: any): void {
-    if (this.editarProducto) {
-      this.editarProducto(producto);
-    }
-  }
-
   eliminarProducto(producto: any): void {
     const confirmar = confirm(`¿Deseas desactivar el producto "${this.obtenerNombre(producto)}"?`);
 
@@ -294,7 +293,7 @@ obtenerTextoStock(producto: any): string {
     if (imagen.startsWith('http')) return imagen;
     if (imagen.startsWith('data:image')) return imagen;
     if (imagen.startsWith('assets/')) return imagen;
-    if (imagen.startsWith('/')) return `http://localhost:3000${imagen}`;
+    if (imagen.startsWith('/')) return `https://easycommerce.onrender.com${imagen}`;
 
     return imagen;
   }

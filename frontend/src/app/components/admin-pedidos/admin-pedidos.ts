@@ -1,5 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router, RouterLink } from '@angular/router';
 import { ProductoService } from '../../../services/producto.service';
 
 interface DetalleOrdenAdmin {
@@ -46,15 +47,11 @@ interface GrupoUsuarioOrdenes {
 @Component({
   selector: 'app-admin-pedidos',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './admin-pedidos.html',
   styleUrl: './admin-pedidos.css'
 })
 export class AdminPedidosComponent implements OnInit {
-  @Input() cambiarVista!: (vista: string) => void;
-  @Input() cerrarSesion!: () => void;
-  @Input() vistaActual = '';
-
   ordenes: OrdenAdmin[] = [];
   ordenesAgrupadas: GrupoUsuarioOrdenes[] = [];
 
@@ -62,7 +59,10 @@ export class AdminPedidosComponent implements OnInit {
   mensaje = '';
   mensajeError = '';
 
-  constructor(private productoService: ProductoService) {}
+  constructor(
+    private productoService: ProductoService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.cargarOrdenes();
@@ -146,7 +146,9 @@ export class AdminPedidosComponent implements OnInit {
   }
 
   obtenerEstadoGeneralDesdeDetalles(detalles: DetalleOrdenAdmin[]): string {
-    if (!detalles || detalles.length === 0) return 'Sin estado';
+    if (!detalles || detalles.length === 0) {
+      return 'Sin estado';
+    }
 
     return detalles[0].estado || 'Sin estado';
   }
@@ -263,24 +265,22 @@ export class AdminPedidosComponent implements OnInit {
     if (imagen.startsWith('http')) return imagen;
     if (imagen.startsWith('data:image')) return imagen;
     if (imagen.startsWith('assets/')) return imagen;
-    if (imagen.startsWith('/')) return `http://localhost:3000${imagen}`;
+    if (imagen.startsWith('/')) return `https://easycommerce.onrender.com${imagen}`;
 
     return imagen;
-  }
-
-  irA(vista: string, event?: Event): void {
-    if (event) event.preventDefault();
-
-    if (this.cambiarVista) {
-      this.cambiarVista(vista);
-    }
   }
 
   logout(event: Event): void {
     event.preventDefault();
 
-    if (this.cerrarSesion) {
-      this.cerrarSesion();
-    }
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuarioId');
+    localStorage.removeItem('nombreUsuario');
+    localStorage.removeItem('correo');
+    localStorage.removeItem('rol');
+    localStorage.removeItem('tipoLogin');
+    sessionStorage.clear();
+
+    this.router.navigate(['/admin/login']);
   }
 }

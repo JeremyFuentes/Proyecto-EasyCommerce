@@ -1,9 +1,10 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductoService } from '../../../services/producto.service';
 import { Subscription } from 'rxjs';
 import { BusquedaService } from '../../../services/busqueda.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-productos-lista',
@@ -13,9 +14,6 @@ import { BusquedaService } from '../../../services/busqueda.service';
   styleUrl: './productos-lista.css'
 })
 export class ProductosListaComponent implements OnInit, OnDestroy {
-  @Input() editarProducto!: (producto: any) => void;
-  @Input() verDetalleProducto!: (producto: any) => void;
-  @Input() cambiarVista!: (vista: string) => void;
 
   productos: any[] = [];
   productosFiltrados: any[] = [];
@@ -48,7 +46,8 @@ export class ProductosListaComponent implements OnInit, OnDestroy {
 
   constructor(
     private productoService: ProductoService,
-    private busquedaService: BusquedaService
+    private busquedaService: BusquedaService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -364,16 +363,34 @@ export class ProductosListaComponent implements OnInit, OnDestroy {
   }
 
   abrirDetalle(producto: any): void {
-    if (this.verDetalleProducto) {
-      this.verDetalleProducto(producto);
+    const productoId = this.obtenerIdProducto(producto);
+
+    if (!productoId) {
+      this.mensajeError = 'No se pudo abrir el detalle del producto.';
+      return;
     }
+
+    this.router.navigate(['/productos', productoId]);
+  }
+
+  obtenerIdProducto(producto: any): string {
+    return String(
+      producto.ProductoID ??
+      producto.productoID ??
+      producto.ProductoId ??
+      producto.productoId ??
+      producto.id ??
+      producto._id ??
+      ''
+    );
   }
 
   agregarAlCarrito(producto: any): void {
     const token = localStorage.getItem('token');
 
-    if (!token) {
-      this.solicitarLogin('agregar productos al carrito');
+    if (!this.estaLogueado()) {
+      this.accionPendiente = 'agregar productos al carrito';
+      this.mostrarModalLogin = true;
       return;
     }
 
@@ -405,8 +422,9 @@ export class ProductosListaComponent implements OnInit, OnDestroy {
   agregarAFavoritos(producto: any): void {
     const token = localStorage.getItem('token');
 
-    if (!token) {
-      this.solicitarLogin('guardar productos en favoritos');
+    if (!this.estaLogueado()) {
+      this.accionPendiente = 'agregar productos a favoritos';
+      this.mostrarModalLogin = true;
       return;
     }
 
@@ -476,6 +494,10 @@ export class ProductosListaComponent implements OnInit, OnDestroy {
         }, 3000);
       }
     });
+  }
+
+  estaLogueado(): boolean {
+    return !!localStorage.getItem('token') && localStorage.getItem('tipoLogin') === 'usuario';
   }
 
   esProductoFavorito(producto: any): boolean {
@@ -587,7 +609,7 @@ export class ProductosListaComponent implements OnInit, OnDestroy {
     }
 
     if (imagen.startsWith('/')) {
-      return `http://localhost:3000${imagen}`;
+      return `https://easycommerce.onrender.com${imagen}`;
     }
 
     return imagen;
@@ -619,11 +641,12 @@ export class ProductosListaComponent implements OnInit, OnDestroy {
   }
 
   irALogin(): void {
-    this.mostrarModalLogin = false;
+    this.cerrarModalLogin();
+    this.router.navigate(['/login']);
+  }
 
-    if (this.cambiarVista) {
-      this.cambiarVista('login');
-    }
+  irADashboard(): void {
+    this.router.navigate(['/dashboard']);
   }
 
 }

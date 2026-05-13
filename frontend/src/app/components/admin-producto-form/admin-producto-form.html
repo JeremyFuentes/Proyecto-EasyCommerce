@@ -122,13 +122,13 @@
           <!-- Previsualización de imágenes -->
           <div class="col-12 mt-3">
             <h6 class="fw-semibold" *ngIf="imagenesProducto.length > 0">
-  Previsualización
-</h6>
+              Previsualización
+            </h6>
 
             <div class="preview-container">
               <div class="preview-item" *ngFor="let imagen of imagenesProducto; let i = index"
                 [class.preview-principal]="i === imagenPrincipalIndex">
-                <img [src]="imagen.url" alt="Preview imagen" class="preview-img">
+                <img [src]="imagen.url" alt="Preview imagen" class="preview-img" loading="lazy" decoding="async">
 
                 <div class="preview-actions">
                   <button type="button" class="btn btn-sm" [class.btn-dark]="i === imagenPrincipalIndex"

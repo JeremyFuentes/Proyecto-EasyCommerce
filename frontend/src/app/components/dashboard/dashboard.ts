@@ -1,5 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+
 import { ProductoService } from '../../../services/producto.service';
 import { BusquedaService } from '../../../services/busqueda.service';
 
@@ -11,9 +13,6 @@ import { BusquedaService } from '../../../services/busqueda.service';
   styleUrl: './dashboard.css'
 })
 export class DashboardComponent implements OnInit {
-  @Input() cambiarVista!: (vista: string) => void;
-  @Input() verDetalleProducto!: (producto: any) => void;
-
   laptopsNuevas: any[] = [];
   productosAsus: any[] = [];
   mensajeError = '';
@@ -23,8 +22,9 @@ export class DashboardComponent implements OnInit {
 
   constructor(
     private productoService: ProductoService,
-    private busquedaService: BusquedaService
-  ) { }
+    private busquedaService: BusquedaService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.cargarProductosInicio();
@@ -74,32 +74,45 @@ export class DashboardComponent implements OnInit {
 
   verProductos(): void {
     this.busquedaService.limpiarBusqueda();
-
-    if (this.cambiarVista) {
-      this.cambiarVista('lista');
-    }
+    this.router.navigate(['/productos']);
   }
 
   verDetalle(producto: any): void {
-    if (this.verDetalleProducto) {
-      this.verDetalleProducto(producto);
+    const productoId = this.obtenerIdProducto(producto);
+
+    if (!productoId) {
+      this.mensajeError = 'No se pudo abrir el detalle del producto.';
+      console.warn('Producto sin ID:', producto);
+      return;
     }
+
+    this.router.navigate(['/productos', productoId]);
   }
 
   verTodosLaptops(): void {
+    this.busquedaService.limpiarBusqueda();
     this.busquedaService.establecerFiltroCategoria(this.categoriaLaptopId);
 
-    if (this.cambiarVista) {
-      this.cambiarVista('lista');
-    }
+    this.router.navigate(['/productos']);
   }
 
   verTodosAsus(): void {
+    this.busquedaService.limpiarBusqueda();
     this.busquedaService.establecerFiltroMarca(this.marcaAsusId);
 
-    if (this.cambiarVista) {
-      this.cambiarVista('lista');
-    }
+    this.router.navigate(['/productos']);
+  }
+
+  obtenerIdProducto(producto: any): string {
+    return String(
+      producto.ProductoID ??
+      producto.productoID ??
+      producto.ProductoId ??
+      producto.productoId ??
+      producto._id ??
+      producto.id ??
+      ''
+    );
   }
 
   obtenerNombre(producto: any): string {
@@ -134,7 +147,7 @@ export class DashboardComponent implements OnInit {
     }
 
     if (imagen.startsWith('/')) {
-      return `http://localhost:3000${imagen}`;
+      return `https://easycommerce.onrender.com${imagen}`;
     }
 
     return imagen;

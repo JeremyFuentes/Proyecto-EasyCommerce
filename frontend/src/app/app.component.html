@@ -1,15 +1,5 @@
-<div class="menu">
-  <button (click)="vista='login'">Login</button>
-  <button (click)="vista='dashboard'">Dashboard</button>
-  <button (click)="vista='lista'">Lista productos</button>
-  <button (click)="vista='crear'">Crear producto</button>
-  <button (click)="vista='editar'">Editar producto</button>
-</div>
+<app-navbar *ngIf="mostrarNavbar()"></app-navbar>
 
-<div [ngSwitch]="vista">
-  <app-login *ngSwitchCase="'login'"></app-login>
-  <app-dashboard *ngSwitchCase="'dashboard'"></app-dashboard>
-  <app-productos-lista *ngSwitchCase="'lista'"></app-productos-lista>
-  <app-producto-crear *ngSwitchCase="'crear'"></app-producto-crear>
-  <app-producto-editar *ngSwitchCase="'editar'"></app-producto-editar>
-</div>
+<router-outlet></router-outlet>
+
+<app-footer *ngIf="mostrarFooter()"></app-footer>

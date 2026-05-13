@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { UsuarioService } from '../../../services/usuario.service';
 import { ProductoService } from '../../../services/producto.service';
 import { MetodoPagoService } from '../../../services/metodo-pago.service';
+import { Router } from '@angular/router';
 
 interface DetalleOrden {
   carritoId: string | number;
@@ -80,10 +81,26 @@ export class ConfiguracionComponent implements OnInit {
   constructor(
     private usuarioService: UsuarioService,
     private productoService: ProductoService,
-    private metodoPagoService: MetodoPagoService
+    private metodoPagoService: MetodoPagoService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
+    const token = localStorage.getItem('token');
+    const tipoLogin = localStorage.getItem('tipoLogin');
+
+    if (!token || tipoLogin !== 'usuario') {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    this.usuarioId = localStorage.getItem('usuarioId') || '';
+
+    if (!this.usuarioId) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
     this.cargarUsuario();
   }
 
@@ -106,7 +123,7 @@ export class ConfiguracionComponent implements OnInit {
 
   cargarUsuario(): void {
     if (!this.usuarioId) {
-      this.mensajeError = 'No se encontró el usuario en sesión.';
+      this.router.navigate(['/login']);
       return;
     }
 
@@ -415,7 +432,7 @@ export class ConfiguracionComponent implements OnInit {
     }
 
     if (imagen.startsWith('/')) {
-      return `http://localhost:3000${imagen}`;
+      return `https://easycommerce.onrender.com${imagen}`;
     }
 
     return imagen;
@@ -464,5 +481,17 @@ export class ConfiguracionComponent implements OnInit {
   limpiarMensajes(): void {
     this.mensaje = '';
     this.mensajeError = '';
+  }
+
+  irAProductos(): void {
+    this.router.navigate(['/productos']);
+  }
+
+  irACarrito(): void {
+    this.router.navigate(['/carrito']);
+  }
+
+  irADashboard(): void {
+    this.router.navigate(['/dashboard']);
   }
 }

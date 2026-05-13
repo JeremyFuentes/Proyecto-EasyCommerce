@@ -42,11 +42,8 @@
             -{{ producto.descuento }}%
           </span>
 
-          <img
-            [src]="obtenerImagen(producto)"
-            [alt]="obtenerNombre(producto)"
-            class="card-img-promocion"
-          >
+          <img [src]="obtenerImagen(producto)" class="card-img-top" [alt]="obtenerNombre(producto)" loading="lazy"
+            decoding="async">
 
           <div class="card-body d-flex flex-column">
             <h5 class="card-title fw-bold">

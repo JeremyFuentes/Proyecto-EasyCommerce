@@ -3,7 +3,7 @@
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item">
-        <button class="breadcrumb-link" type="button" (click)="cambiarVista('dashboard')">
+        <button class="breadcrumb-link" type="button" (click)="irADashboard()">
           Inicio
         </button>
       </li>
@@ -131,7 +131,7 @@
 
                 <div class="producto-imagen-box">
                   <img [src]="obtenerImagen(producto)" [alt]="obtenerNombre(producto)" class="producto-imagen"
-                    (click)="abrirDetalle(producto)">
+                    loading="lazy" decoding="async" (click)="abrirDetalle(producto)">
 
                   <button class="btn-fav-simple" type="button" (click)="agregarAFavoritos(producto)"
                     [disabled]="estaCargandoFavorito(producto)" [class.favorito-activo]="esProductoFavorito(producto)"
@@ -199,44 +199,36 @@
   </div>
 
   <div class="modal-backdrop-custom" *ngIf="mostrarModalLogin">
-  <div class="modal-card-login">
+    <div class="modal-card-login">
 
-    <div class="modal-header-custom">
-      <h5 class="modal-title fw-bold">
-        Inicia sesión para continuar
-      </h5>
+      <div class="modal-header-custom">
+        <h5 class="modal-title fw-bold">
+          Inicia sesión para continuar
+        </h5>
 
-      <button type="button" class="btn-close-custom" (click)="cerrarModalLogin()">
-        ×
-      </button>
+        <button type="button" class="btn-close-custom" (click)="cerrarModalLogin()">
+          ×
+        </button>
+      </div>
+
+      <div class="modal-body text-center px-4">
+        <i class="fa fa-user-lock fa-3x mb-3 text-dark"></i>
+
+        <p class="mb-0">
+          Para {{ accionPendiente }} necesitas iniciar sesión en tu cuenta.
+        </p>
+      </div>
+
+      <div class="modal-footer-custom">
+        <button type="button" class="btn btn-outline-secondary rounded-pill px-4" (click)="cerrarModalLogin()">
+          Cancelar
+        </button>
+
+        <button type="button" class="btn btn-dark rounded-pill px-4" (click)="irALogin()">
+          Iniciar sesión
+        </button>
+      </div>
+
     </div>
-
-    <div class="modal-body text-center px-4">
-      <i class="fa fa-user-lock fa-3x mb-3 text-dark"></i>
-
-      <p class="mb-0">
-        Para {{ accionPendiente }} necesitas iniciar sesión en tu cuenta.
-      </p>
-    </div>
-
-    <div class="modal-footer-custom">
-      <button
-        type="button"
-        class="btn btn-outline-secondary rounded-pill px-4"
-        (click)="cerrarModalLogin()"
-      >
-        Cancelar
-      </button>
-
-      <button
-        type="button"
-        class="btn btn-dark rounded-pill px-4"
-        (click)="irALogin()"
-      >
-        Iniciar sesión
-      </button>
-    </div>
-
   </div>
-</div>
 </section>

@@ -1,6 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { AuthService, LoginResponse } from '../../../services/auth.service';
 
 @Component({
@@ -10,15 +11,26 @@ import { AuthService, LoginResponse } from '../../../services/auth.service';
   templateUrl: './admin-login.html',
   styleUrl: './admin-login.css'
 })
-export class AdminLoginComponent {
-  @Input() loginAdminExitoso!: () => void;
-
+export class AdminLoginComponent implements OnInit {
   correoAdmin = '';
   passwordAdmin = '';
   errorAdminLogin = '';
   cargando = false;
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
+
+  ngOnInit(): void {
+    const token = localStorage.getItem('token');
+    const rol = localStorage.getItem('rol');
+    const tipoLogin = localStorage.getItem('tipoLogin');
+
+    if (token && rol === 'Administrador' && tipoLogin === 'admin') {
+      this.router.navigate(['/admin/productos']);
+    }
+  }
 
   iniciarSesionAdmin(): void {
     this.errorAdminLogin = '';
@@ -39,11 +51,9 @@ export class AdminLoginComponent {
         localStorage.setItem('nombreUsuario', respuesta.nombre || respuesta.usuario?.nombre || 'Administrador');
         localStorage.setItem('correo', respuesta.correo || respuesta.usuario?.correo || this.correoAdmin);
         localStorage.setItem('rol', respuesta.rol || respuesta.usuario?.rol || 'Administrador');
-
         localStorage.setItem('tipoLogin', 'admin');
-        sessionStorage.setItem('vistaActual', 'admin-productos');
 
-        this.loginAdminExitoso();
+        this.router.navigate(['/admin/productos']);
       },
       error: (error: any) => {
         this.cargando = false;

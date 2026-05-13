@@ -2,62 +2,38 @@
 
   <!-- Barra lateral -->
   <div class="sidebar">
-  <div class="sidebar-title">
-    <i class="fa fa-cubes"></i>
-    <span>Administración</span>
+    <div class="sidebar-title">
+      <i class="fa fa-cubes"></i>
+      <span>Administración</span>
+    </div>
+
+    <nav class="nav flex-column sidebar-nav">
+      <a class="nav-link" routerLink="/admin/productos" routerLinkActive="active">
+        <i class="fa fa-box"></i>
+        <span>Productos</span>
+      </a>
+
+      <a class="nav-link" routerLink="/admin/usuarios" routerLinkActive="active">
+        <i class="fa fa-users"></i>
+        <span>Usuarios</span>
+      </a>
+
+      <a class="nav-link" routerLink="/admin/pedidos" routerLinkActive="active">
+        <i class="fa fa-truck"></i>
+        <span>Pedidos</span>
+      </a>
+
+      <a class="nav-link" routerLink="/admin/catalogos" routerLinkActive="active">
+        <i class="fa fa-tags"></i>
+        <span>Catálogos</span>
+      </a>
+
+      <a class="nav-link logout-link" href="#" (click)="logout($event)">
+        <i class="fa fa-right-from-bracket"></i>
+        <span>Cerrar sesión</span>
+      </a>
+    </nav>
   </div>
-
-  <nav class="nav flex-column sidebar-nav">
-  <a
-    class="nav-link"
-    [class.active]="vistaActual === 'admin-productos'"
-    href="#"
-    (click)="irA('admin-productos', $event)"
-  >
-    <i class="fa fa-box"></i>
-    <span>Productos</span>
-  </a>
-
-  <a
-    class="nav-link"
-    [class.active]="vistaActual === 'admin-usuarios'"
-    href="#"
-    (click)="irA('admin-usuarios', $event)"
-  >
-    <i class="fa fa-users"></i>
-    <span>Usuarios</span>
-  </a>
-
-  <a
-    class="nav-link"
-    [class.active]="vistaActual === 'admin-pedidos'"
-    href="#"
-    (click)="irA('admin-pedidos', $event)"
-  >
-    <i class="fa fa-truck"></i>
-    <span>Pedidos</span>
-  </a>
-
-  <a
-    class="nav-link"
-    [class.active]="vistaActual === 'admin-auxiliares'"
-    href="#"
-    (click)="irA('admin-auxiliares', $event)"
-  >
-    <i class="fa fa-tags"></i>
-    <span>Catálogos</span>
-  </a>
-
-  <a
-    class="nav-link logout-link"
-    href="#"
-    (click)="logout($event)"
-  >
-    <i class="fa fa-right-from-bracket"></i>
-    <span>Cerrar sesión</span>
-  </a>
-</nav>
-</div>
 
   <!-- Contenido principal -->
   <div class="content">
@@ -197,7 +173,8 @@
               </span>
             </td>
             <td>
-              <img [src]="obtenerImagen(producto)" [alt]="obtenerNombre(producto)" class="product-img-admin">
+              <img [src]="obtenerImagen(producto)" [alt]="obtenerNombre(producto)" class="product-img-admin"
+                loading="lazy" decoding="async">
             </td>
             <td>
               <div class="d-flex gap-2">

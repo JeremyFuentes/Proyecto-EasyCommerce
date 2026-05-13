@@ -1,7 +1,9 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ProductoService } from '../../../services/producto.service';
+import imageCompression from 'browser-image-compression';
 
 interface ImagenAdmin {
   id?: string | number;
@@ -17,13 +19,7 @@ interface ImagenAdmin {
   templateUrl: './admin-producto-form.html',
   styleUrl: './admin-producto-form.css'
 })
-export class AdminProductoFormComponent implements OnChanges {
-  @Input() productoSeleccionado: any | null = null;
-  @Input() volver!: () => void;
-  @Input() crearProducto!: () => void;
-  @Input() cambiarVista!: (vista: string) => void;
-  @Input() vistaActual = '';
-
+export class AdminProductoFormComponent implements OnInit {
   modoEdicion = false;
 
   producto = {
@@ -49,43 +45,29 @@ export class AdminProductoFormComponent implements OnChanges {
 
   mensaje = '';
   mensajeError = '';
+  cargando = false;
 
-  constructor(private productoService: ProductoService) {
+  constructor(
+    private productoService: ProductoService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) { }
+
+  ngOnInit(): void {
     this.cargarAuxiliares();
-  }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['productoSeleccionado']) {
-      this.prepararFormulario();
-    }
-  }
+    const id = this.route.snapshot.paramMap.get('id');
 
-  prepararFormulario(): void {
-    this.mensaje = '';
-    this.mensajeError = '';
-
-    if (this.productoSeleccionado) {
+    if (id) {
       this.modoEdicion = true;
-
-      this.producto = {
-        id: this.obtenerId(this.productoSeleccionado),
-        nombre: this.productoSeleccionado.Nombre || this.productoSeleccionado.nombre || '',
-        precio: Number(this.productoSeleccionado.Precio || this.productoSeleccionado.precio || 0),
-        stock: Number(this.productoSeleccionado.Stock || this.productoSeleccionado.stock || 0),
-        categoriaId: String(this.productoSeleccionado.CategoriaID || this.productoSeleccionado.categoriaId || ''),
-        marcaId: String(this.productoSeleccionado.MarcaID || this.productoSeleccionado.marcaId || ''),
-        proveedorId: String(this.productoSeleccionado.ProveedorID || this.productoSeleccionado.proveedorId || ''),
-        descripcion: this.productoSeleccionado.Descripcion || this.productoSeleccionado.descripcion || '',
-        imagen: this.productoSeleccionado.Imagen || this.productoSeleccionado.imagen || '',
-        estado: this.obtenerEstado(this.productoSeleccionado),
-        sku: this.productoSeleccionado.SKU || this.productoSeleccionado.sku || ''
-      };
-
-      this.cargarImagenesProducto();
-      return;
+      this.cargarProductoPorId(id);
+    } else {
+      this.modoEdicion = false;
+      this.prepararFormularioNuevo();
     }
+  }
 
-    this.modoEdicion = false;
+  prepararFormularioNuevo(): void {
     this.producto = {
       id: '',
       nombre: '',
@@ -104,12 +86,46 @@ export class AdminProductoFormComponent implements OnChanges {
     this.imagenPrincipalIndex = 0;
   }
 
+  cargarProductoPorId(id: string): void {
+    this.cargando = true;
+    this.mensaje = '';
+    this.mensajeError = '';
+
+    this.productoService.obtenerProductoPorId(id).subscribe({
+      next: (respuesta: any) => {
+        this.cargando = false;
+
+        const producto = respuesta.data || respuesta;
+
+        this.producto = {
+          id: this.obtenerId(producto),
+          nombre: producto.Nombre || producto.nombre || '',
+          precio: Number(producto.Precio || producto.precio || 0),
+          stock: Number(producto.Stock || producto.stock || 0),
+          categoriaId: String(producto.CategoriaID || producto.categoriaId || producto.CategoriaId || ''),
+          marcaId: String(producto.MarcaID || producto.marcaId || producto.MarcaId || ''),
+          proveedorId: String(producto.ProveedorID || producto.proveedorId || producto.ProveedorId || ''),
+          descripcion: producto.Descripcion || producto.descripcion || '',
+          imagen: producto.Imagen || producto.imagen || '',
+          estado: this.obtenerEstado(producto),
+          sku: producto.SKU || producto.sku || ''
+        };
+
+        this.cargarImagenesProducto();
+      },
+      error: (error: any) => {
+        this.cargando = false;
+        this.mensajeError = error.error?.mensaje || 'No se pudo cargar el producto.';
+      }
+    });
+  }
+
   cargarAuxiliares(): void {
     this.productoService.obtenerCategorias().subscribe({
       next: (respuesta: any) => {
         const datos = respuesta.data || respuesta || [];
         this.categorias = datos.map((c: any) => ({
-          id: c.CategoriaID || c.categoriaId || c.id,
+          id: c.CategoriaID || c.categoriaId || c.CategoriaId || c.id,
           nombre: c.Nombre || c.nombre
         }));
       }
@@ -119,7 +135,7 @@ export class AdminProductoFormComponent implements OnChanges {
       next: (respuesta: any) => {
         const datos = respuesta.data || respuesta || [];
         this.marcas = datos.map((m: any) => ({
-          id: m.MarcaID || m.marcaId || m.id,
+          id: m.MarcaID || m.marcaId || m.MarcaId || m.id,
           nombre: m.Nombre || m.nombre
         }));
       }
@@ -129,7 +145,7 @@ export class AdminProductoFormComponent implements OnChanges {
       next: (respuesta: any) => {
         const datos = respuesta.data || respuesta || [];
         this.proveedores = datos.map((p: any) => ({
-          id: p.ProveedorID || p.proveedorId || p.id,
+          id: p.ProveedorID || p.proveedorId || p.ProveedorId || p.id,
           nombre: p.Nombre || p.nombre
         }));
       }
@@ -144,9 +160,9 @@ export class AdminProductoFormComponent implements OnChanges {
         const datos = respuesta.data || respuesta || [];
 
         this.imagenesProducto = datos.map((img: any) => ({
-          id: img.IdImagen || img._id,
+          id: img.IdImagen || img.ImagenProductoID || img._id,
           url: this.normalizarImagen(img.UrlImagen || img.urlImagen || ''),
-          esPrincipal: Boolean(img.EsPrincipal),
+          esPrincipal: Boolean(img.EsPrincipal || img.esPrincipal),
           nueva: false
         }));
 
@@ -159,11 +175,30 @@ export class AdminProductoFormComponent implements OnChanges {
     });
   }
 
-  seleccionarImagenes(event: Event): void {
+  async comprimirImagen(archivo: File): Promise<File> {
+    const opciones = {
+      maxSizeMB: 0.3,
+      maxWidthOrHeight: 900,
+      useWebWorker: true,
+      fileType: 'image/webp'
+    };
+
+    try {
+      const imagenComprimida = await imageCompression(archivo, opciones);
+      return imagenComprimida;
+    } catch (error) {
+      console.error('Error al comprimir imagen:', error);
+      return archivo;
+    }
+  }
+
+  async seleccionarImagenes(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     const archivos = Array.from(input.files || []);
 
     if (archivos.length === 0) return;
+
+    this.mensajeError = '';
 
     const cantidadActual = this.imagenesProducto.length;
     const disponibles = 5 - cantidadActual;
@@ -180,7 +215,21 @@ export class AdminProductoFormComponent implements OnChanges {
       return;
     }
 
-    archivos.forEach((archivo) => {
+    for (const archivo of archivos) {
+      if (!archivo.type.startsWith('image/')) {
+        this.mensajeError = 'Solo se permiten archivos de imagen.';
+        continue;
+      }
+
+      const pesoMaximoOriginalMB = 8;
+
+      if (archivo.size > pesoMaximoOriginalMB * 1024 * 1024) {
+        this.mensajeError = `La imagen ${archivo.name} es demasiado pesada. Máximo ${pesoMaximoOriginalMB} MB.`;
+        continue;
+      }
+
+      const imagenComprimida = await this.comprimirImagen(archivo);
+
       const lector = new FileReader();
 
       lector.onload = () => {
@@ -192,11 +241,12 @@ export class AdminProductoFormComponent implements OnChanges {
 
         if (this.imagenesProducto.length === 1) {
           this.imagenPrincipalIndex = 0;
+          this.seleccionarPrincipal(0);
         }
       };
 
-      lector.readAsDataURL(archivo);
-    });
+      lector.readAsDataURL(imagenComprimida);
+    }
 
     input.value = '';
   }
@@ -228,7 +278,9 @@ export class AdminProductoFormComponent implements OnChanges {
             this.imagenPrincipalIndex = 0;
           }
 
-          this.seleccionarPrincipal(this.imagenPrincipalIndex);
+          if (this.imagenesProducto.length > 0) {
+            this.seleccionarPrincipal(this.imagenPrincipalIndex);
+          }
         },
         error: () => {
           this.mensajeError = 'No se pudo eliminar la imagen.';
@@ -253,7 +305,13 @@ export class AdminProductoFormComponent implements OnChanges {
     this.mensaje = '';
     this.mensajeError = '';
 
-    if (!this.producto.nombre || !this.producto.precio || !this.producto.categoriaId || !this.producto.marcaId || !this.producto.proveedorId) {
+    if (
+      !this.producto.nombre.trim() ||
+      !this.producto.precio ||
+      !this.producto.categoriaId ||
+      !this.producto.marcaId ||
+      !this.producto.proveedorId
+    ) {
       this.mensajeError = 'Completa todos los campos obligatorios.';
       return;
     }
@@ -265,13 +323,13 @@ export class AdminProductoFormComponent implements OnChanges {
 
     const data = {
       ProductoID: this.producto.id,
-      Nombre: this.producto.nombre,
+      Nombre: this.producto.nombre.trim(),
       Precio: Number(this.producto.precio),
       Stock: Number(this.producto.stock),
       CategoriaID: Number(this.producto.categoriaId),
       MarcaID: Number(this.producto.marcaId),
       ProveedorID: Number(this.producto.proveedorId),
-      Descripcion: this.producto.descripcion,
+      Descripcion: this.producto.descripcion.trim(),
       Imagen: this.producto.imagen,
       Estado: Boolean(this.producto.estado),
       SKU: this.producto.sku || `PRD-${Date.now()}`
@@ -284,7 +342,7 @@ export class AdminProductoFormComponent implements OnChanges {
     peticion.subscribe({
       next: async (respuesta: any) => {
         const productoGuardado = respuesta.data || respuesta;
-        const productoId = productoGuardado.ProductoID || this.producto.id;
+        const productoId = productoGuardado.ProductoID || productoGuardado.productoId || this.producto.id;
 
         try {
           await this.guardarImagenes(productoId);
@@ -327,21 +385,7 @@ export class AdminProductoFormComponent implements OnChanges {
   }
 
   cancelar(): void {
-    this.productoSeleccionado = null;
-    this.mensaje = '';
-    this.mensajeError = '';
-
-    if (this.volver) {
-      this.volver();
-      return;
-    }
-
-    if (this.cambiarVista) {
-      this.cambiarVista('admin-productos');
-      return;
-    }
-
-    console.warn('No se recibió volver ni cambiarVista en admin-producto-form');
+    this.router.navigate(['/admin/productos']);
   }
 
   obtenerId(producto: any): string {
@@ -367,7 +411,7 @@ export class AdminProductoFormComponent implements OnChanges {
     if (imagen.startsWith('http')) return imagen;
     if (imagen.startsWith('data:image')) return imagen;
     if (imagen.startsWith('assets/')) return imagen;
-    if (imagen.startsWith('/')) return `http://localhost:3000${imagen}`;
+    if (imagen.startsWith('/')) return `https://easycommerce.onrender.com${imagen}`;
     return imagen;
   }
 }

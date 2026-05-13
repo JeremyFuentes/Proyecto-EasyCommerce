@@ -3,10 +3,12 @@
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item">
-        <button class="breadcrumb-link">Home</button>
+        <button class="breadcrumb-link" type="button" (click)="irADashboard()">
+          Inicio
+        </button>
       </li>
       <li class="breadcrumb-item active" aria-current="page">
-        Cart
+        Carrito
       </li>
     </ol>
   </nav>
@@ -40,7 +42,7 @@
             <div class="row align-items-center g-3">
 
               <div class="col-12 col-md-2 text-center">
-                <img [src]="item.imagen" [alt]="item.nombre" class="cart-img">
+                <img [src]="item.imagen" [alt]="item.nombre" class="cart-img" loading="lazy" decoding="async">
               </div>
 
               <div class="col-12 col-md-4">
@@ -288,7 +290,7 @@
         Cancelar
       </button>
 
-      <button type="button" class="btn btn-primary" (click)="cerrarModalContacto()">
+      <button type="button" class="btn btn-primary" (click)="irAConfiguracion()">
         Ir a ajustes
       </button>
     </div>

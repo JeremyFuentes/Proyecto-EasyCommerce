@@ -1,20 +1,17 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
 import { UsuarioService } from '../../../services/usuario.service';
 
 @Component({
   selector: 'app-admin-usuarios',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './admin-usuarios.html',
   styleUrl: './admin-usuarios.css'
 })
 export class AdminUsuariosComponent implements OnInit {
-  @Input() cambiarVista!: (vista: string) => void;
-  @Input() cerrarSesion!: () => void;
-  @Input() vistaActual = '';
-
   usuarios: any[] = [];
   usuariosFiltrados: any[] = [];
 
@@ -37,7 +34,10 @@ export class AdminUsuariosComponent implements OnInit {
   nuevaPassword = '';
   confirmarPassword = '';
 
-  constructor(private usuarioService: UsuarioService) {}
+  constructor(
+    private usuarioService: UsuarioService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.cargarUsuarios();
@@ -114,9 +114,6 @@ export class AdminUsuariosComponent implements OnInit {
   }
 
   guardarUsuario(): void {
-console.log('Botón guardar usuario presionado');
-  console.log('Usuario seleccionado:', this.usuarioSeleccionado);
-
     this.limpiarMensajes();
 
     if (!this.usuarioSeleccionado.nombre.trim()) {
@@ -170,20 +167,18 @@ console.log('Botón guardar usuario presionado');
     });
   }
 
-  irA(vista: string, event?: Event): void {
-    if (event) event.preventDefault();
-
-    if (this.cambiarVista) {
-      this.cambiarVista(vista);
-    }
-  }
-
   logout(event: Event): void {
     event.preventDefault();
 
-    if (this.cerrarSesion) {
-      this.cerrarSesion();
-    }
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuarioId');
+    localStorage.removeItem('nombreUsuario');
+    localStorage.removeItem('correo');
+    localStorage.removeItem('rol');
+    localStorage.removeItem('tipoLogin');
+    sessionStorage.clear();
+
+    this.router.navigate(['/admin/login']);
   }
 
   limpiarMensajes(): void {

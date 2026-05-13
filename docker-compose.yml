@@ -1,14 +1,24 @@
-version: '3.9'
-
 services:
   backend:
-    build: ./backend
+    build:
+      context: ./backend
     container_name: inventario-backend
     ports:
       - "3000:3000"
+    env_file:
+      - ./backend/.env
+    environment:
+      PORT: 3000
+      ADMIN_ALLOWED_IPS: "*"
+      RUN_SEED: "false"
+    restart: unless-stopped
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
     container_name: inventario-frontend
     ports:
-      - "80:80"
+      - "4200:80"
+    depends_on:
+      - backend
+    restart: unless-stopped

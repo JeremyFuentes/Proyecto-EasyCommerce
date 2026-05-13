@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg bg-white border-bottom py-3">
   <div class="container">
-    <a class="navbar-brand d-flex align-items-center gap-2" href="#" (click)="irADashboard($event)">
+    <a class="navbar-brand d-flex align-items-center gap-2" routerLink="/dashboard">
       <img src="assets/img/EasyCommerceCarrito.png" alt="Logo EasyCommerce" height="30">
       <span class="fw-bold">
         Easy<span class="text-muted">Commerce</span>
@@ -14,25 +14,25 @@
     <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
       <ul class="navbar-nav">
         <li class="nav-item">
-          <a class="nav-link" href="#" (click)="irAProductos($event)">
+          <a class="nav-link" routerLink="/productos">
             Productos
           </a>
         </li>
 
         <li class="nav-item">
-          <a class="nav-link" href="#" (click)="irAServicios($event)">
+          <a class="nav-link" routerLink="/servicios">
             Servicios
           </a>
         </li>
 
         <li class="nav-item">
-          <a class="nav-link" href="#" (click)="irANosotros($event)">
+          <a class="nav-link" routerLink="/nosotros">
             Nosotros
           </a>
         </li>
 
         <li class="nav-item">
-          <a class="nav-link" href="#" (click)="irAPromociones($event)">
+          <a class="nav-link" routerLink="/promociones">
             Promociones
           </a>
         </li>
@@ -40,8 +40,13 @@
 
       <div class="d-flex align-items-center navbar-right">
         <div class="search-box">
-          <input class="form-control search-input" type="search" placeholder="Buscar un producto..."
-            [(ngModel)]="terminoBusqueda" (keyup.enter)="buscarProducto()" />
+          <input
+            class="form-control search-input"
+            type="search"
+            placeholder="Buscar un producto..."
+            [(ngModel)]="terminoBusqueda"
+            (keyup.enter)="buscarProducto()"
+          />
 
           <button class="search-btn" type="button" (click)="buscarProducto()">
             <i class="fa fa-search"></i>
@@ -49,7 +54,12 @@
         </div>
 
         <!-- Si NO hay sesión -->
-        <button *ngIf="!logueado" class="btn btn-dark rounded-pill px-4" type="button" (click)="cambiarVista('login')">
+        <button
+          *ngIf="!logueado"
+          class="btn btn-dark rounded-pill px-4"
+          type="button"
+          (click)="irALogin()"
+        >
           Iniciar sesión
         </button>
 
@@ -60,25 +70,37 @@
             {{ obtenerNombreUsuario() }}
           </span>
 
-          <a href="#" class="icon-link text-dark" (click)="cambiarVista('carrito'); $event.preventDefault()"
-            title="Carrito">
+          <a
+            routerLink="/carrito"
+            class="icon-link text-dark"
+            title="Carrito"
+          >
             <i class="fa fa-shopping-cart"></i>
           </a>
 
-          <a href="#" class="icon-link text-dark" (click)="cambiarVista('favoritos'); $event.preventDefault()"
-            title="Favoritos">
+          <a
+            routerLink="/favoritos"
+            class="icon-link text-dark"
+            title="Favoritos"
+          >
             <i class="fa fa-heart"></i>
           </a>
 
           <div class="dropdown user-dropdown">
-            <span class="text-dark user-icon" role="button" id="dropdownUser" data-bs-toggle="dropdown"
-              aria-expanded="false" title="Usuario">
+            <span
+              class="text-dark user-icon"
+              role="button"
+              id="dropdownUser"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              title="Usuario"
+            >
               <i class="fa fa-user"></i>
             </span>
 
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownUser">
               <li>
-                <a class="dropdown-item" href="#" (click)="irAConfiguracion($event)">
+                <a class="dropdown-item" routerLink="/configuracion">
                   Configuración
                 </a>
               </li>
@@ -95,6 +117,7 @@
             </ul>
           </div>
         </div>
+
       </div>
     </div>
   </div>

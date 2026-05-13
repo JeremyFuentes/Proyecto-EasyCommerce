@@ -1,5 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { ProductoService } from '../../../services/producto.service';
 
 interface ProductoFavorito {
@@ -20,18 +21,26 @@ interface ProductoFavorito {
   styleUrl: './favoritos.css'
 })
 export class FavoritosComponent implements OnInit {
-  @Input() verDetalleProducto!: (producto: any) => void;
-  @Input() cambiarVista!: (vista: string) => void;
-
   favoritos: ProductoFavorito[] = [];
 
   cargando = false;
   mensaje = '';
   mensajeError = '';
 
-  constructor(private productoService: ProductoService) {}
+  constructor(
+    private productoService: ProductoService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
+    const token = localStorage.getItem('token');
+    const tipoLogin = localStorage.getItem('tipoLogin');
+
+    if (!token || tipoLogin !== 'usuario') {
+      this.router.navigate(['/login']);
+      return;
+    }
+
     this.cargarFavoritos();
   }
 
@@ -39,7 +48,7 @@ export class FavoritosComponent implements OnInit {
     const usuarioId = localStorage.getItem('usuarioId');
 
     if (!usuarioId) {
-      this.mensajeError = 'No se encontró el usuario en sesión.';
+      this.router.navigate(['/login']);
       return;
     }
 
@@ -97,7 +106,7 @@ export class FavoritosComponent implements OnInit {
     }
 
     if (imagen.startsWith('/')) {
-      return `http://localhost:3000${imagen}`;
+      return `https://easycommerce.onrender.com${imagen}`;
     }
 
     return imagen;
@@ -131,14 +140,17 @@ export class FavoritosComponent implements OnInit {
   }
 
   verDetalle(favorito: ProductoFavorito): void {
-    if (this.verDetalleProducto) {
-      this.verDetalleProducto(favorito.productoOriginal);
+    const productoId = favorito.productoId;
+
+    if (!productoId) {
+      this.mensajeError = 'No se pudo abrir el detalle del producto.';
+      return;
     }
+
+    this.router.navigate(['/productos', productoId]);
   }
 
   irAProductos(): void {
-    if (this.cambiarVista) {
-      this.cambiarVista('lista');
-    }
+    this.router.navigate(['/productos']);
   }
 }
