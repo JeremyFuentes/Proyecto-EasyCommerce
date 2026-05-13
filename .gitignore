@@ -1,0 +1,21 @@
+Dependencias
+node_modules/
+/node_modules/
+
+Builds
+dist/
+/dist/
+
+Variables de entorno
+.env
+**/.env
+
+Angular cache
+.angular/
+
+Logs
+*.log
+
+Editor
+.vscode/
+.idea/
