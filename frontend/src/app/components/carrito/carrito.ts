@@ -83,6 +83,45 @@ export class CarritoComponent implements OnInit {
     this.cargarCarrito();
   }
 
+  cargarImagenesPrincipalesCarrito(): void {
+    this.carrito.forEach((item) => {
+      if (!item.productoId) return;
+
+      this.productoService.obtenerImagenesProducto(item.productoId).subscribe({
+        next: (respuesta: any) => {
+          const imagenes = Array.isArray(respuesta)
+            ? respuesta
+            : respuesta.data || [];
+
+          if (!imagenes || imagenes.length === 0) return;
+
+          const principal = imagenes.find((img: any) =>
+            img.EsPrincipal === true ||
+            img.esPrincipal === true ||
+            img.EsPrincipal === 1 ||
+            img.esPrincipal === 1
+          );
+
+          const imagenSeleccionada = principal || imagenes[0];
+
+          const url =
+            imagenSeleccionada.UrlImagen ||
+            imagenSeleccionada.urlImagen ||
+            imagenSeleccionada.Imagen ||
+            imagenSeleccionada.imagen ||
+            '';
+
+          if (url) {
+            item.imagen = this.normalizarImagen(url);
+          }
+        },
+        error: () => {
+          // Si falla, se queda con la imagen que ya tenía o el placeholder.
+        }
+      });
+    });
+  }
+
   cargarCarrito(): void {
     const usuarioId = localStorage.getItem('usuarioId');
 
@@ -98,11 +137,14 @@ export class CarritoComponent implements OnInit {
       next: (respuesta: any) => {
         this.cargando = false;
 
+        console.log('Respuesta carrito:', respuesta);
+
         const datos = Array.isArray(respuesta)
           ? respuesta
           : respuesta.data || [];
 
         this.carrito = datos.map((item: any) => this.mapearItemCarrito(item));
+        this.cargarImagenesPrincipalesCarrito();
       },
       error: (error: any) => {
         this.cargando = false;
@@ -112,24 +154,63 @@ export class CarritoComponent implements OnInit {
   }
 
   mapearItemCarrito(item: any): ItemCarrito {
+    const producto = item.Producto || item.producto || {};
+
+    const imagen =
+      item.Imagen ||
+      item.imagen ||
+      item.UrlImagen ||
+      item.urlImagen ||
+      producto.Imagen ||
+      producto.imagen ||
+      producto.UrlImagen ||
+      producto.urlImagen ||
+      '';
+
     return {
       id: item.CarritoID || item.carritoId || item._id,
       carritoId: item.CarritoID || item.carritoId || item._id,
-      productoId: item.ProductoID || item.productoId || '',
-      nombre: item.NombreProducto || item.nombreProducto || item.nombre || 'Producto sin nombre',
-      descripcion: item.Descripcion || item.descripcion || '',
-      precio: Number(item.PrecioUnitario || item.precioUnitario || item.precio || 0),
+      productoId:
+        item.ProductoID ||
+        item.productoId ||
+        producto.ProductoID ||
+        producto.productoId ||
+        producto._id ||
+        '',
+      nombre:
+        item.NombreProducto ||
+        item.nombreProducto ||
+        item.nombre ||
+        producto.Nombre ||
+        producto.nombre ||
+        'Producto sin nombre',
+      descripcion:
+        item.Descripcion ||
+        item.descripcion ||
+        producto.Descripcion ||
+        producto.descripcion ||
+        '',
+      precio: Number(
+        item.PrecioUnitario ||
+        item.precioUnitario ||
+        item.precio ||
+        producto.Precio ||
+        producto.precio ||
+        0
+      ),
       cantidad: Number(item.Cantidad || item.cantidad || 1),
-      imagen: this.normalizarImagen(item.Imagen || item.imagen || ''),
+      imagen: this.normalizarImagen(imagen),
       estadoProductoId: Number(item.EstadoProductoId || item.estadoProductoId || 1),
       estadoProducto: item.EstadoProducto || item.estadoProducto || 'Pendiente de Pago'
     };
   }
 
   normalizarImagen(imagen: string): string {
-    if (!imagen) {
+    if (!imagen || imagen.trim() === '') {
       return 'assets/img/EasyCommerce.png';
     }
+
+    imagen = imagen.trim();
 
     if (imagen.startsWith('http')) {
       return imagen;

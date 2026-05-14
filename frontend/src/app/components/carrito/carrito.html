@@ -42,7 +42,8 @@
             <div class="row align-items-center g-3">
 
               <div class="col-12 col-md-2 text-center">
-                <img [src]="item.imagen" [alt]="item.nombre" class="cart-img" loading="lazy" decoding="async">
+                <img [src]="item.imagen" [alt]="item.nombre" class="cart-img" loading="lazy" decoding="async"
+                  (error)="item.imagen = 'assets/img/EasyCommerce.png'">
               </div>
 
               <div class="col-12 col-md-4">
