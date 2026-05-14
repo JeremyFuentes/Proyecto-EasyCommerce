@@ -62,7 +62,7 @@ export class AdminPedidosComponent implements OnInit {
   constructor(
     private productoService: ProductoService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.cargarOrdenes();
@@ -82,12 +82,52 @@ export class AdminPedidosComponent implements OnInit {
           : respuesta.data || [];
 
         this.ordenes = datos.map((orden: any) => this.mapearOrden(orden));
+        this.cargarImagenesPrincipalesOrdenes(this.ordenes);
         this.agruparOrdenesPorUsuario();
       },
       error: (error: any) => {
         this.cargando = false;
         this.mensajeError = error.error?.mensaje || 'No se pudieron cargar las órdenes.';
       }
+    });
+  }
+
+  cargarImagenesPrincipalesOrdenes(ordenes: OrdenAdmin[]): void {
+    ordenes.forEach((orden) => {
+      orden.detalles.forEach((item) => {
+        if (!item.productoId) return;
+
+        this.productoService.obtenerImagenesProducto(item.productoId).subscribe({
+          next: (respuesta: any) => {
+            const imagenes = Array.isArray(respuesta)
+              ? respuesta
+              : respuesta.data || [];
+
+            if (!imagenes || imagenes.length === 0) return;
+
+            const principal = imagenes.find((img: any) =>
+              img.EsPrincipal === true ||
+              img.esPrincipal === true ||
+              img.EsPrincipal === 1 ||
+              img.esPrincipal === 1
+            );
+
+            const imagenSeleccionada = principal || imagenes[0];
+
+            const url =
+              imagenSeleccionada.UrlImagen ||
+              imagenSeleccionada.urlImagen ||
+              imagenSeleccionada.Imagen ||
+              imagenSeleccionada.imagen ||
+              '';
+
+            if (url) {
+              item.imagen = this.normalizarImagen(url);
+            }
+          },
+          error: () => { }
+        });
+      });
     });
   }
 
@@ -117,12 +157,12 @@ export class AdminPedidosComponent implements OnInit {
       estadoGeneral: orden.EstadoGeneral || orden.estadoGeneral || this.obtenerEstadoGeneralDesdeDetalles(detalles),
       usuario: usuario
         ? {
-            id: usuario._id || usuario.id || '',
-            nombre: usuario.nombre || usuario.Nombre || 'Usuario sin nombre',
-            correo: usuario.correo || usuario.Correo || 'Sin correo',
-            direccion: usuario.direccion || usuario.Direccion || '',
-            contacto: usuario.contacto || usuario.Contacto || ''
-          }
+          id: usuario._id || usuario.id || '',
+          nombre: usuario.nombre || usuario.Nombre || 'Usuario sin nombre',
+          correo: usuario.correo || usuario.Correo || 'Sin correo',
+          direccion: usuario.direccion || usuario.Direccion || '',
+          contacto: usuario.contacto || usuario.Contacto || ''
+        }
         : null,
       detalles
     };

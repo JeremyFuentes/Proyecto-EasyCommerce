@@ -152,7 +152,8 @@
 
                 <div class="factura-row" *ngFor="let item of orden.detalles">
                   <div class="factura-producto">
-                    <img class="factura-img" [src]="item.imagen" [alt]="item.nombre" loading="lazy" decoding="async">
+                    <img class="factura-img" [src]="item.imagen" [alt]="item.nombre" loading="lazy" decoding="async"
+                      (error)="item.imagen = 'assets/img/EasyCommerce.png'">
 
                     <div>
                       <p class="fw-semibold mb-1">{{ item.nombre }}</p>
@@ -245,7 +246,8 @@
 
                 <div class="factura-row" *ngFor="let item of orden.detalles">
                   <div class="factura-producto">
-                    <img class="factura-img" [src]="item.imagen" [alt]="item.nombre" loading="lazy" decoding="async">
+                    <img class="factura-img" [src]="item.imagen" [alt]="item.nombre" loading="lazy" decoding="async"
+                      (error)="item.imagen = 'assets/img/EasyCommerce.png'">
 
                     <div>
                       <p class="fw-semibold mb-1">{{ item.nombre }}</p>

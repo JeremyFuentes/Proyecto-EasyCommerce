@@ -243,6 +243,7 @@ export class ConfiguracionComponent implements OnInit {
           : respuesta.data || [];
 
         this.pedidosActivos = datos.map((orden: any) => this.mapearOrden(orden));
+        this.cargarImagenesPrincipalesOrdenes(this.pedidosActivos);
       },
       error: (error: any) => {
         this.cargando = false;
@@ -265,11 +266,53 @@ export class ConfiguracionComponent implements OnInit {
           : respuesta.data || [];
 
         this.historialPedidos = datos.map((orden: any) => this.mapearOrden(orden));
+        this.cargarImagenesPrincipalesOrdenes(this.historialPedidos);
       },
       error: (error: any) => {
         this.cargando = false;
         this.mensajeError = error.error?.mensaje || 'No se pudo cargar el historial.';
       }
+    });
+  }
+
+  cargarImagenesPrincipalesOrdenes(ordenes: OrdenUsuario[]): void {
+    ordenes.forEach((orden) => {
+      orden.detalles.forEach((item) => {
+        if (!item.productoId) return;
+
+        this.productoService.obtenerImagenesProducto(item.productoId).subscribe({
+          next: (respuesta: any) => {
+            const imagenes = Array.isArray(respuesta)
+              ? respuesta
+              : respuesta.data || [];
+
+            if (!imagenes || imagenes.length === 0) return;
+
+            const principal = imagenes.find((img: any) =>
+              img.EsPrincipal === true ||
+              img.esPrincipal === true ||
+              img.EsPrincipal === 1 ||
+              img.esPrincipal === 1
+            );
+
+            const imagenSeleccionada = principal || imagenes[0];
+
+            const url =
+              imagenSeleccionada.UrlImagen ||
+              imagenSeleccionada.urlImagen ||
+              imagenSeleccionada.Imagen ||
+              imagenSeleccionada.imagen ||
+              '';
+
+            if (url) {
+              item.imagen = this.normalizarImagen(url);
+            }
+          },
+          error: () => {
+            // Si falla, se queda con la imagen que ya tenía o con el placeholder.
+          }
+        });
+      });
     });
   }
 
@@ -405,7 +448,15 @@ export class ConfiguracionComponent implements OnInit {
       carritoId: detalle.CarritoID || detalle.carritoId || detalle._id,
       productoId: detalle.ProductoID || detalle.productoId || '',
       nombre: detalle.NombreProducto || detalle.nombreProducto || 'Producto sin nombre',
-      imagen: this.normalizarImagen(detalle.Imagen || detalle.imagen || ''),
+      imagen: this.normalizarImagen(
+        detalle.Imagen ||
+        detalle.imagen ||
+        detalle.UrlImagen ||
+        detalle.urlImagen ||
+        detalle.Producto?.Imagen ||
+        detalle.producto?.imagen ||
+        ''
+      ),
       cantidad,
       precioUnitario,
       totalLinea: Number(detalle.TotalLinea || detalle.totalLinea || cantidad * precioUnitario),
